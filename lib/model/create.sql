@@ -1,0 +1,31 @@
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS news;
+DROP TABLE IF EXISTS comment;
+
+CREATE TABLE user (
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_name TEXT UNIQUE NOT NULL,
+    hashed_password TEXT NOT NULL,
+    salt TEXT NOT NULL,
+    privilege INTEGER DEFAULT 0,
+    joined_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE news ( 
+    news_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    news_title TEXT UNIQUE NOT NULL,
+    body TEXT NOT NULL,
+    author_id INTEGER,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    edited_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(author_id) REFERENCES user(user_id) ON DELETE SET NULL
+);
+
+CREATE TABLE comment (
+    comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    comment TEXT NOT NULL, 
+    commentor INTEGER, 
+    news_id INTEGER NOT NULL,
+    FOREIGN KEY(commentor) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY(news_id) REFERENCES news(news_id) ON DELETE CASCADE
+);
