@@ -11,6 +11,17 @@ class Router
     public function __construct(Application $app)
     {
         $this->app = $app;
+
+        /**
+         *
+         * Define URL routes: "path" => [which object, which method]
+         * Add more routes here as needed, for example:
+         *
+         *   "/" => [$this->app, "index"]
+         *
+         * This will run index() method from $this->app when user visits "/"
+         *
+         */
         $this->routes = [
             "/" => [$this->app, "index"],
         ];

@@ -5,7 +5,6 @@ declare(strict_types=1);
 define("CONTROLLER", __DIR__ . "/../lib/controller/");
 define("MODEL", __DIR__ . "/../lib/model/");
 define("VIEWS", __DIR__ . "/../lib/views/");
-define("CSS", __DIR__ . "/../lib/css/");
 
 $path = "/";
 if (isset($_SERVER["PATH_INFO"])) {

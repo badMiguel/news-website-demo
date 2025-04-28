@@ -11,7 +11,14 @@ class Application
         $this->db = $db;
     }
 
-    private function render(string $viewName, array $data)
+    /**
+     *
+     * Use this method to render a view inside layout.php
+     * - $viewName is the file name of the views (without ".php") e.g. home 
+     * - $data is associative array to pass data to views
+     *
+     */
+    public function render(string $viewName, array $data)
     {
         $data['viewPath'] = VIEWS . $viewName . ".php";
         extract($data);
