@@ -1,5 +1,5 @@
 <h1>this is home</h1>
-<?php foreach ($newsList as $news): ?>
+<?php foreach ($currNewsList as $news): ?>
     <div class='news-card'>
         <h2><?= $news["news_title"] ?></h2>
         <p><?= $news["news_summary"] ?></p>
@@ -12,3 +12,4 @@
     </div>
     <hr>
 <?php endforeach ?>
+<?php require VIEWS . "page_number.php" ?>

@@ -31,6 +31,7 @@ class Paginator
 
     public function getTotalPages(): int
     {
+        return intdiv($this->totalNews, $this->amountToDisplay);
     }
 
     /**
@@ -40,6 +41,48 @@ class Paginator
      */
     public function getPageRange(): array
     {
+        $totalPages = $this->getTotalPages();
+
+        if ($totalPages <= 2) {
+            return [];
+        }
+
+        $currentPage = $this->currentPage;
+        $pageStart = $currentPage;
+        $pageEnd = $currentPage;
+        $counter = 0;
+
+        if ($currentPage === 1 && $totalPages > 3) {
+            $pageEnd++;
+        }
+
+        if ($currentPage === $totalPages && $totalPages - 3 > 1) {
+            $pageStart--;
+        }
+
+        while ($counter < 2) {
+            if ($pageStart - 1 > 1) {
+                $pageStart--;
+                $counter++;
+            }
+
+            if ($counter === 1 && $totalPages < 5) {
+                break;
+            } else if ($counter === 3) {
+                break;
+            }
+
+            if ($pageEnd + 1 < $totalPages) {
+                $pageEnd++;
+                $counter++;
+            }
+
+            if ($counter === 1 && $totalPages < 5) {
+                break;
+            }
+        }
+
+        return [$pageStart ?? 0, $pageEnd ?? 0];
     }
 
     public function changeAmountToDisplay(int $value)

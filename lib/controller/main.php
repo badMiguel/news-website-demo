@@ -32,9 +32,14 @@ class Application
     {
         $newsList = $this->model->getAllNews();
         $currNewsList = $this->paginator->start($newsList);
+        $totalPages = $this->paginator->getTotalPages();
+        $pageInfo = $this->paginator->getPageRange();
 
         $data = [
             "currNewsList" => $currNewsList,
+            "totalPages" => $totalPages,
+            "pageStart" => $pageInfo[0],
+            "pageEnd" => $pageInfo[1],
         ];
         $this->render("home", $data);
     }
