@@ -1,12 +1,12 @@
 -- Insert data into the user table
 INSERT INTO user (user_name, hashed_password, salt, privilege) 
 VALUES 
-    ('alice', 'hashed_pw1', 'salt1', 1),
-    ('bob', 'hashed_pw2', 'salt2', 0),
-    ('charlie', 'hashed_pw3', 'salt3', 0);
-    ('editor1', 'hashed_pw4', 'salt4', 2),
-    ('journalist1', 'hashed_pw5', 'salt5', 1),
-    ('user1', 'hashed_pw6', 'salt6', 0); 
+    ('alice', '$2y$10$.pGITR3/yGTA7UAoqb1DvuXNoAa8hNA/yQ3fC.aCWDyg/ths0QywS', '329bf2d0601a4df19965b5fdd0a4b629', 1),
+    ('bob', ' $2y$10$RTofvZZF6zldpGyZZSjupeoXPT/s6ARj/8HZcG6grC/FgwUX3Svk2', ' 91c34c21416704ee2920863b32246660', 0),
+    ('charlie', '$2y$10$gxDI3/Ff6mIVEpFD6eF.UenBQ.k0/nHxzWw5epkAcx2.yH8Cjvone', ' 186e412edee520387a240e6bd06a0e02', 0);
+    ('editor1', '$2y$10$QMlRCyskb4TZvzTsnS6HquySQvGs85zvEkIdbrHse7UwNT551WyrW', ' 82cc1443fc5f9f1171d81fb7eed5fb59', 2),
+    ('journalist1', '$2y$10$9/gG1W/hHk8KS4GleMuQ.u5jBtc.H.YwFbs0hn6mVsvDXszK7brTe', 'f33c18241e019686468ccd810124e7e9', 1),
+    ('user1', '$2y$10$jM7SUi5FL6YkbDp.5hpt9eCQlxHZQdbEBOgfDNOYn.jguR5pfvh22', '00b2dc61dd6bb558f16b1c3ef0e4c45e', 0); 
 
 -- Insert data into the news table
 INSERT INTO news (news_title, news_summary, body, author_id)
