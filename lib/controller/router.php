@@ -32,6 +32,7 @@ class Router
             "/news/edit" => [$this->app, "editNews"],
             "/news/edit/submit" => [$this->app, "editNewsSubmit"],
             "/news/delete" => [$this->app, "deleteNews"],
+            "/news/comment/add" => [$this->app, "addComment"],
         ];
     }
 
