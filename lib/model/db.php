@@ -123,5 +123,15 @@ class Model
         }
     }
 
-
+    public function getCommentsForNews(int $newsId): array
+    {
+        $statement = $this->db->prepare("
+            SELECT c.*, u.user_name AS commentor_name 
+            FROM comment c 
+            LEFT JOIN user u ON c.commentor = u.user_id 
+            WHERE c.news_id = :newsId
+        ");
+        $statement->execute(["newsId" => $newsId]);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
