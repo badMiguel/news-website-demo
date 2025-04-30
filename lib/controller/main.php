@@ -6,11 +6,15 @@ class Application
 {
     private Model $model;
     private Paginator $paginator;
+    private array $newsList;
+    private array $currNewsList;
 
     public function __construct(Model $model, Paginator $paginator)
     {
         $this->model = $model;
         $this->paginator = $paginator;
+        $this->newsList = $this->model->getAllNews();
+        $this->currNewsList = $this->paginator->start($this->newsList);
     }
 
     /**
@@ -30,17 +34,31 @@ class Application
 
     public function index(): void
     {
-        $newsList = $this->model->getAllNews();
-        $currNewsList = $this->paginator->start($newsList);
+        session_start();
+        $this->paginator->currentPage = isset($_SESSION["currentPage"]) ? $_SESSION["currentPage"] : 1;
+        session_write_close();
+
+
+        if (isset($_GET["prev"])) {
+            $this->currNewsList = $this->paginator->prevPage();
+        } else if (isset($_GET["next"])) {
+            $this->currNewsList = $this->paginator->nextPage();
+        } else if (isset($_GET["page"])) {
+            $page = (int) $_GET["page"];
+            $this->currNewsList = $this->paginator->skipToPage($page);
+        }
+
         $totalPages = $this->paginator->getTotalPages();
         $pageInfo = $this->paginator->getPageRange();
 
         $data = [
-            "currNewsList" => $currNewsList,
+            "currNewsList" => $this->currNewsList,
+            "currentPage" => $this->paginator->currentPage,
             "totalPages" => $totalPages,
             "pageStart" => $pageInfo[0],
             "pageEnd" => $pageInfo[1],
         ];
+
         $this->render("home", $data);
     }
 
