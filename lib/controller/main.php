@@ -72,6 +72,17 @@ class Application
         $this->render("home", $data);
     }
 
+    public function news(): void
+    {
+        $newsDetails = $this->model->getNewsDetails((int) $_GET["id"]);
+
+        $data = [
+            "newsDetails" => $newsDetails,
+        ];
+
+        $this->render("news_details", $data);
+    }
+
     public function pageNotFound(): void
     {
         $this->render("404", []);

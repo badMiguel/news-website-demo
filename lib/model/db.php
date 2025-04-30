@@ -32,7 +32,10 @@ class Model
 
     public function getAllNews(): array
     {
-        $statement = $this->db->query("SELECT * FROM news");
+        $statement = $this->db->query("
+            SELECT * FROM news
+            ORDER BY edited_date
+        ");
         $newsList = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 
@@ -48,5 +51,22 @@ class Model
         $statement = $this->db->prepare("SELECT * FROM user WHERE user_name = :username");
         $statement->execute(["username" => $username]);
         return $statement->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function getNewsDetails(int $id): ?array
+    {
+        $statement = $this->db->prepare("
+            SELECT * FROM news 
+            WHERE news_id = :news_id
+        ");
+        $statement->execute(["news_id" => $id]);
+        $newsDetails = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$newsDetails) {
+            return null;
+        }
+
+        $newsDetails["author"] = $this->getAuthorName($newsDetails["author_id"]);
+        return $newsDetails;
     }
 }
