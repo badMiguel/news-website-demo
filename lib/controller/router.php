@@ -29,6 +29,9 @@ class Router
             "/news/create/submit" => [$this->app, "createNewsSubmit"],
             "/login" => [$this->app, "login"],
             "/logout" => [$this->app, "logout"],
+            "/news/edit" => [$this->app, "editNews"],
+            "/news/edit/submit" => [$this->app, "editNewsSubmit"],
+            "/news/delete" => [$this->app, "deleteNews"],
         ];
     }
 
