@@ -91,15 +91,11 @@ class Model
     public function updateNewsInDB(int $newsId): void
     {
         try {
-            session_start();
-            $authorId = $_SESSION['user_id'];
-            session_write_close();
-
             $statement = $this->db->prepare("
-                INSERT INTO news (news_title, news_summary, body, author_id, created_date, edited_date)
-                VALUES (:title, :summary, :body, :authorId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                UPDATE news 
+                SET news_title = :title, news_summary = :summary, body = :body, edited_date = CURRENT_TIMESTAMP
+                WHERE news_id = :newsId
             ");
-            
             $statement->execute([
                 "title" => $_POST["news_title"],
                 "summary" => $_POST["news_summary"],
