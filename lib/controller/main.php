@@ -85,6 +85,8 @@ class Application
 
     public function createNews(): void
     {
+        $this->checkPrivilege(2);
+
         $data = [
             "title" => "Create News"
         ];
@@ -93,6 +95,7 @@ class Application
 
     public function createNewsSubmit(): void
     {
+        $this->checkPrivilege(2);
         if (
             !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
             !isset($_POST["news_summary"]) || $_POST["news_summary"] === "" ||
@@ -161,6 +164,58 @@ class Application
             header('Location: /login');
             exit;
         }
+    }
+
+    public function editNews(): void
+    {
+        $this->checkPrivilege(2); 
+
+        $newsDetails = $this->model->getNewsDetails((int) $_GET["id"]);
+
+        $data = [
+            "title" => "Edit News",
+            "newsDetails" => $newsDetails,
+        ];
+        $this->render("edit_news", $data);
+    }
+    public function editNewsSubmit(): void
+    {
+        $this->checkPrivilege(2); 
+
+        if (
+            !isset($_POST["news_id"]) || $_POST["news_id"] === "" ||
+            !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
+            !isset($_POST["news_summary"]) || $_POST["news_summary"] === "" ||
+            !isset($_POST["body"]) || $_POST["body"] === ""
+        ) {
+            session_start();
+            $_SESSION["newsEditStatus"] = false;
+            session_write_close();
+
+            header("Location: /news/edit?id=" . $_POST["news_id"]);
+            exit();
+        }
+
+        $this->model->updateNewsInDB((int) $_POST["news_id"]);
+
+        session_start();
+        $_SESSION["newsEditStatus"] = true;
+        session_write_close();
+
+        header("Location: /news/edit?id=" . $_POST["news_id"]);
+        exit();
+    }
+
+
+    public function deleteNews(): void
+    {
+        $this->checkPrivilege(2); 
+
+        $newsId = (int) $_GET["id"];
+        $this->model->deleteNewsFromDB($newsId);
+
+        header("Location: /");
+        exit();
     }
     public function pageNotFound(): void
     {
