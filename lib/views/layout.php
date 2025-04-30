@@ -9,13 +9,21 @@
 </head>
 
 <body>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/login">Login?</a></li>
-        </ul>
-    </nav>
-    <?php require $viewPath ?>
+<header>
+        <h1>Austro-Asian Times</h1>
+        <nav>
+            <a href="/">Home</a>
+            <?php session_start(); ?>
+            <?php if (isset($_SESSION['username'])): ?>
+                <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+                <a href="/logout">Logout</a>
+            <?php else: ?>
+                <a href="/login">Login</a>
+            <?php endif; ?>
+        </nav>
+    </header>
+    <main>
+        <?php require_once $viewPath; ?>
+    </main>
 </body>
-
 </html>
