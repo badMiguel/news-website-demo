@@ -38,17 +38,17 @@ class Application
         $this->paginator->currentPage = isset($_SESSION["currentPage"]) ? $_SESSION["currentPage"] : 1;
         session_write_close();
 
+        $totalPages = $this->paginator->getTotalPages();
 
-        if (isset($_GET["prev"])) {
-            $this->currNewsList = $this->paginator->prevPage();
-        } else if (isset($_GET["next"])) {
-            $this->currNewsList = $this->paginator->nextPage();
-        } else if (isset($_GET["page"])) {
-            $page = (int) $_GET["page"];
-            $this->currNewsList = $this->paginator->skipToPage($page);
+        if (isset($_GET["page"])) {
+            if ($_GET["page"] > $totalPages) {
+                $this->currNewsList = $this->paginator->skipToPage($this->paginator->currentPage);
+            } else {
+                $page = (int) $_GET["page"];
+                $this->currNewsList = $this->paginator->skipToPage($page);
+            }
         }
 
-        $totalPages = $this->paginator->getTotalPages();
         $pageInfo = $this->paginator->getPageRange();
 
         $data = [
@@ -67,3 +67,4 @@ class Application
         $this->render("404", []);
     }
 }
+

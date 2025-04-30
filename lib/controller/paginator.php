@@ -39,40 +39,38 @@ class Paginator
 
         if ($totalPages <= 2) {
             return [];
+        } else if ($totalPages === 3) {
+            return [2, 3];
+        } else if ($totalPages === 4) {
+            return [2, 4];
         }
 
-        $currentPage = $this->currentPage;
-        $pageStart = $currentPage;
-        $pageEnd = $currentPage;
-        $counter = 0;
+        $pageStart = $this->currentPage;
+        $pageEnd = $this->currentPage;
+        $pageToDisplay = 5;
+        $maxCounter = $this->getTotalPages() - 2 < $pageToDisplay // excluding first and last page
+            ? $this->getTotalPages() - 2
+            : $pageToDisplay;
+        $counter = 1;
 
-        if ($currentPage === 1 && $totalPages > 3) {
+        if ($this->currentPage === 1 && $totalPages > 3) {
             $pageEnd++;
         }
 
-        if ($currentPage === $totalPages && $totalPages - 3 > 1) {
+        if ($this->currentPage === $totalPages && $totalPages - 3 > 1) {
             $pageStart--;
         }
 
-        while ($counter < 2) {
+        while ($counter < $maxCounter) {
+
             if ($pageStart - 1 > 1) {
                 $pageStart--;
                 $counter++;
             }
 
-            if ($counter === 1 && $totalPages < 5) {
-                break;
-            } else if ($counter === 3) {
-                break;
-            }
-
             if ($pageEnd + 1 < $totalPages) {
                 $pageEnd++;
                 $counter++;
-            }
-
-            if ($counter === 1 && $totalPages < 5) {
-                break;
             }
         }
 
@@ -96,39 +94,4 @@ class Paginator
         $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
         return array_slice($this->newsList, $currIdx, $this->amountToDisplay);
     }
-
-    public function nextPage(): array
-    {
-        session_start();
-        if ($this->currentPage + 1 > $this->getTotalPages()) {
-            $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
-            return array_slice($this->newsList, $currIdx, $this->amountToDisplay);
-        }
-
-        $this->currentPage++;
-
-        $_SESSION["currentPage"] = $this->currentPage;
-        session_write_close();
-
-        $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
-        return array_slice($this->newsList, $currIdx, $this->amountToDisplay);
-    }
-
-    public function prevPage(): array
-    {
-        session_start();
-        if ($this->currentPage - 1 < 1) {
-            $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
-            return array_slice($this->newsList, $currIdx, $this->amountToDisplay);
-        }
-
-        $this->currentPage--;
-
-        $_SESSION["currentPage"] = $this->currentPage;
-        session_write_close();
-
-        $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
-        return array_slice($this->newsList, $currIdx, $this->amountToDisplay);
-    }
 }
-

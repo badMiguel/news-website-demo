@@ -1,5 +1,5 @@
 <?php if ($currentPage !== 1): ?>
-    <p><a href="?prev=1">Prev</a></p>
+    <p><a href="?page=<?= $currentPage - 1 ?>">Prev</a></p>
 <?php endif ?>
 <p><a href="?page=1">1</a></p>
 
@@ -14,5 +14,5 @@
 <?php endif; ?>
 
 <?php if ($currentPage !== $totalPages): ?>
-    <p><a href="?next=1">Next</a></p>
+    <p><a href="?page=<?= $currentPage + 1 ?>">Next</a></p>
 <?php endif ?>
