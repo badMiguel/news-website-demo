@@ -69,4 +69,18 @@ class Model
         $newsDetails["author"] = $this->getAuthorName($newsDetails["author_id"]);
         return $newsDetails;
     }
+
+    public function addNewsToDB(): void
+    {
+        try {
+            $statement = $this->db->prepare("
+            ");
+            $statement->execute([]);
+        } catch (PDOException $err) {
+            error_log("Error adding news to DB: " . $err->getMessage());
+            header("HTTP/1.1 500 Internal Server Error");
+            echo "Sorry, something went wrong. News was not created. Please try again later.";
+            exit();
+        }
+    }
 }

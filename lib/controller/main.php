@@ -83,6 +83,39 @@ class Application
         $this->render("news_details", $data);
     }
 
+    public function createNews(): void
+    {
+        $data = [
+            "title" => "Create News"
+        ];
+        $this->render("create_news", $data);
+    }
+
+    public function createNewsSubmit(): void
+    {
+        if (
+            !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
+            !isset($_POST["news_summary"]) || $_POST["news_summary"] === "" ||
+            !isset($_POST["body"]) || $_POST["body"] === ""
+        ) {
+            session_start();
+            $_SESSION["newsCreateStatus"] = false;
+            session_write_close();
+
+            header("Location: /news/create");
+            exit();
+        }
+
+        $this->model->addNewsToDB();
+
+        session_start();
+        $_SESSION["newsCreateStatus"] = true;
+        session_write_close();
+
+        header("Location: /news/create");
+        exit();
+    }
+
     public function login(): void
     {
         $this->render("login", []);
