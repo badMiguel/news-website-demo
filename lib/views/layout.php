@@ -9,21 +9,22 @@
 </head>
 
 <body>
-<header>
+    <header>
         <h1>Austro-Asian Times</h1>
         <nav>
             <a href="/">Home</a>
             <?php session_start(); ?>
             <?php if (isset($_SESSION['username'])): ?>
-                <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
                 <a href="/logout">Logout</a>
             <?php else: ?>
                 <a href="/login">Login</a>
             <?php endif; ?>
         </nav>
+        <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
     </header>
     <main>
         <?php require_once $viewPath; ?>
     </main>
 </body>
+
 </html>

@@ -6,6 +6,10 @@ define("CONTROLLER", __DIR__ . "/../lib/controller/");
 define("MODEL", __DIR__ . "/../lib/model/");
 define("VIEWS", __DIR__ . "/../lib/views/");
 
+define("USER", 0);
+define("JOURNALIST", 1);
+define("EDITOR", 2);
+
 $path = "/";
 if (isset($_SERVER["PATH_INFO"])) {
     $path = $_SERVER["PATH_INFO"];

@@ -40,7 +40,9 @@ class Model
 
 
         foreach ($newsList as $key => $val) {
-            $newsList[$key]["author"] = $this->getAuthorName($val["author_id"]);
+            if ($val["author_id"]) {
+                $newsList[$key]["author"] = $this->getAuthorName($val["author_id"]);
+            }
         }
 
         return $newsList;
@@ -66,20 +68,31 @@ class Model
             return null;
         }
 
-        $newsDetails["author"] = $this->getAuthorName($newsDetails["author_id"]);
+        if ($newsDetails["author_id"]) {
+            $newsDetails["author"] = $this->getAuthorName($newsDetails["author_id"]);
+        }
         return $newsDetails;
     }
 
-    public function addNewsToDB(): void
+    public function addNewsToDB(string $newsTitle, string $newsSummary, string $newsBody): void
     {
         try {
+            session_start();
             $authorId = $_SESSION['user_id'];
+            session_write_close();
+            error_log($authorId);
 
             $statement = $this->db->prepare("
-                INSERT INTO news (news_title, news_summary, body, author_id, created_date, edited_date)
-                VALUES (:title, :summary, :body, :authorId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                INSERT INTO news 
+                    (news_title, news_summary, body, author_id, created_date, edited_date) 
+                VALUES 
+                    (:title, :summary, :body, :authorId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             ");
-            $statement->execute([]);
+            $statement->execute([
+                "title" => $newsTitle,
+                "summary" => $newsSummary,
+                "body" => $newsBody
+            ]);
         } catch (PDOException $err) {
             error_log("Error adding news to DB: " . $err->getMessage());
             header("HTTP/1.1 500 Internal Server Error");

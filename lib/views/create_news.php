@@ -2,6 +2,7 @@
 
 <?php
 session_start();
+
 if (isset($_SESSION["newsCreateStatus"]) && $_SESSION["newsCreateStatus"] === false) {
     echo "<p><strong>Error submitting news</strong></p>";
 } else if (isset($_SESSION["newsCreateStatus"]) && $_SESSION["newsCreateStatus"] === true) {
