@@ -30,6 +30,8 @@ class Model
         return $result ? $result["user_name"] : null;
     }
 
+    // TODO
+    // - limit the news retrieved based on page number/amount to display
     public function getAllNews(): array
     {
         $statement = $this->db->query("
@@ -38,7 +40,8 @@ class Model
         ");
         $newsList = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-
+        // TODO
+        // - use join statement instead on the query
         foreach ($newsList as $key => $val) {
             if ($val["author_id"]) {
                 $newsList[$key]["author"] = $this->getAuthorName($val["author_id"]);
@@ -68,6 +71,8 @@ class Model
             return null;
         }
 
+        // TODO
+        // - use join statement instead on the query
         if ($newsDetails["author_id"]) {
             $newsDetails["author"] = $this->getAuthorName($newsDetails["author_id"]);
         }
