@@ -23,7 +23,11 @@
             session_write_close();
             ?>
         </nav>
-        <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
+        <?php session_start(); ?>
+        <?php if (isset($_SESSION['username'])): ?>
+            <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
+        <?php endif ?>
+        <?php session_write_close(); ?>
     </header>
     <main>
         <?php require_once $viewPath; ?>
