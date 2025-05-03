@@ -6,21 +6,20 @@ class Paginator
 {
     public int $amountToDisplay;
     private int $totalNews;
-    private array $newsList;
     public int $currentPage;
+    private Model $model;
 
-    public function __construct()
+    public function __construct(Model $model)
     {
         $this->amountToDisplay = 5;
         $this->currentPage = 1;
+        $this->model = $model;
+        $this->totalNews = $this->model->getTotalNewsCount();
     }
 
-    public function start(array $newsList)
+    public function start(): array
     {
-        $this->newsList = $newsList;
-        $this->totalNews = count($newsList);
-
-        return array_slice($this->newsList, 0, $this->amountToDisplay);
+        return $this->model->getNewsList(0, $this->amountToDisplay);
     }
 
     public function getTotalPages(): int
@@ -86,10 +85,10 @@ class Paginator
         $this->currentPage = $currentPage;
 
         $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
-        return array_slice($this->newsList, $currIdx, $this->amountToDisplay);
+        return $this->model->getNewsList($currIdx, $this->amountToDisplay);
     }
 
-    public function changeAmountToDisplay(int $value)
+    public function changeAmountToDisplay(int $value): void
     {
         session_start();
         $_SESSION["amountToDisplay"] = $value;

@@ -21,7 +21,7 @@ require_once CONTROLLER . "paginator.php";
 require_once MODEL . "db.php";
 
 $model = new Model();
-$paginator = new Paginator();
+$paginator = new Paginator($model);
 $app = new Application($model, $paginator);
 $router = new Router($app);
 $router->dispatch($path);

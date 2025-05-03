@@ -6,15 +6,13 @@ class Application
 {
     private Model $model;
     private Paginator $paginator;
-    private array $newsList;
     private array $currNewsList;
 
     public function __construct(Model $model, Paginator $paginator)
     {
         $this->model = $model;
         $this->paginator = $paginator;
-        $this->newsList = $this->model->getAllNews();
-        $this->currNewsList = $this->paginator->start($this->newsList);
+        $this->currNewsList = $this->paginator->start();
     }
 
     /**
@@ -24,7 +22,7 @@ class Application
      * - $data is associative array to pass data to views
      *
      */
-    public function render(string $viewName, array $data)
+    public function render(string $viewName, array $data): void
     {
         $data['viewPath'] = VIEWS . $viewName . ".php";
         extract($data);
@@ -58,7 +56,6 @@ class Application
 
             $this->currNewsList = $this->paginator->skipToPage($page);
         }
-
         $pageInfo = $this->paginator->getPageRange();
 
         $data = [

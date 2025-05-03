@@ -18,20 +18,22 @@ class Model
         }
     }
 
+    public function getTotalNewsCount(): int
     {
+        $statement = $this->db->query("SELECT COUNT(*) FROM news");
+        return $statement->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
     }
 
-    // TODO
-    // - limit the news retrieved based on page number/amount to display
-    public function getAllNews(): array
+    public function getNewsList(int $start, int $end): array
     {
-        $statement = $this->db->query("
-            SELECT news.*,user.user_name
+        $statement = $this->db->prepare("
             SELECT news.*,user.user_name AS author
             FROM news
             JOIN user ON news.author_id = user.user_id
             ORDER BY edited_date
+            LIMIT :end OFFSET :start
         ");
+        $statement->execute(["start" => $start, "end" => $end]);
         $newsList = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $newsList;
@@ -47,7 +49,6 @@ class Model
     public function getNewsDetails(int $id): ?array
     {
         $statement = $this->db->prepare("
-            SELECT news.*,user.user_name
             SELECT news.*,user.user_name AS author
             FROM news 
             JOIN user ON news.author_id = user.user_id
