@@ -5,8 +5,7 @@
 <p><strong>Created:</strong> <?php echo htmlspecialchars($newsDetails['created_date']); ?></p>
 <p><strong>Edited:</strong> <?php echo htmlspecialchars($newsDetails['edited_date']); ?></p>
 
-<?php session_start(); ?>
-<?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] >= 2): ?>
+<?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] >= EDITOR): ?>
     <a href="/news/edit?id=<?php echo htmlspecialchars($newsDetails['news_id']); ?>">Edit</a>
     <a href="/news/delete?id=<?php echo htmlspecialchars($newsDetails['news_id']); ?>" onclick="return confirm('Are you sure you want to delete this news?');">Delete</a>
 <?php endif; ?>
@@ -15,12 +14,12 @@
 <h3>Comments</h3>
 <?php if (isset($newsDetails['comments']) && !empty($newsDetails['comments'])): ?>
     <ul>
-    <?php foreach ($newsDetails['comments'] as $comment): ?>
-        <li>
-            <strong><?php echo htmlspecialchars($comment['commentor_name'] ?? 'Anonymous'); ?>:</strong>
-            <?php echo htmlspecialchars($comment['comment']); ?>
-        </li>
-    <?php endforeach; ?>
+        <?php foreach ($newsDetails['comments'] as $comment): ?>
+            <li>
+                <strong><?php echo htmlspecialchars($comment['commentor_name'] ?? 'Anonymous'); ?>:</strong>
+                <?php echo htmlspecialchars($comment['comment']); ?>
+            </li>
+        <?php endforeach; ?>
     </ul>
 <?php else: ?>
     <p>No comments yet.</p>

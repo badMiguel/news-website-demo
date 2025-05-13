@@ -18,7 +18,7 @@ CREATE TABLE news (
     news_title TEXT UNIQUE NOT NULL,
     news_subtitle TEXT NOT NULL,
     body TEXT NOT NULL,
-    author_id INTEGER,
+    author_id INTEGER NOT NULL,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     edited_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(author_id) REFERENCES user(user_id) ON DELETE SET NULL

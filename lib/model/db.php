@@ -70,18 +70,18 @@ class Model
             session_start();
             $authorId = $_SESSION['user_id'];
             session_write_close();
-            error_log($authorId);
 
             $statement = $this->db->prepare("
                 INSERT INTO news 
-                    (news_title, news_subtitle, body, author_id, created_date, edited_date) 
+                    (news_title, news_subtitle, body, author_id) 
                 VALUES 
-                    (:title, :summary, :body, :authorId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    (:title, :summary, :body, :authorId)
             ");
             $statement->execute([
                 "title" => $newsTitle,
                 "summary" => $newsSummary,
-                "body" => $newsBody
+                "body" => $newsBody,
+                "authorId" => $authorId,
             ]);
         } catch (PDOException $err) {
             error_log("Error adding news to DB: " . $err->getMessage());
