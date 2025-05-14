@@ -71,12 +71,12 @@ VALUES
     ('Thanks for sharing.', 3, 3);
 
 INSERT INTO category (category) VALUES
-    ('News'),
+    ('World'),
     ('Politics'),
+    ('Business'),
     ('Technology'),
-    ('Health'),
-    ('Sports'),
-    ('Entertainment');
+    ('Entertainment'),
+    ('Sports');
 
 INSERT INTO news_category (news_id, category_id)
 VALUES

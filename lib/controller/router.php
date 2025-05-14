@@ -23,16 +23,25 @@ class Router
          *
          */
         $this->routes = [
-            "/" => [$this->app, "index"],
-            "/news" => [$this->app, "news"],
-            "/news/create" => [$this->app, "createNews"],
-            "/news/create/submit" => [$this->app, "createNewsSubmit"],
-            "/login" => [$this->app, "login"],
-            "/logout" => [$this->app, "logout"],
-            "/news/edit" => [$this->app, "editNews"],
-            "/news/edit/submit" => [$this->app, "editNewsSubmit"],
-            "/news/delete" => [$this->app, "deleteNews"],
-            "/news/comment/add" => [$this->app, "addComment"],
+            "/"                     => [$this->app, "index"],
+            "/home"                 => [$this->app, "index"],
+            "/world"                => [$this->app, "index"],
+            "/politics"             => [$this->app, "index"],
+            "/business"             => [$this->app, "index"],
+            "/technology"           => [$this->app, "index"],
+            "/entertainment"        => [$this->app, "index"],
+            "/sports"               => [$this->app, "index"],
+
+            "/news"                 => [$this->app, "news"],
+            "/news/create"          => [$this->app, "createNews"],
+            "/news/create/submit"   => [$this->app, "createNewsSubmit"],
+            "/news/edit"            => [$this->app, "editNews"],
+            "/news/edit/submit"     => [$this->app, "editNewsSubmit"],
+            "/news/delete"          => [$this->app, "deleteNews"],
+            "/news/comment/add"     => [$this->app, "addComment"],
+
+            "/login"                => [$this->app, "login"],
+            "/logout"               => [$this->app, "logout"],
         ];
     }
 

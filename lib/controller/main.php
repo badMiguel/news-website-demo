@@ -12,7 +12,7 @@ class Application
     {
         $this->model = $model;
         $this->paginator = $paginator;
-        $this->currNewsList = $this->paginator->start();
+        $this->currNewsList = [];
     }
 
     /**
@@ -35,6 +35,12 @@ class Application
         session_start();
         $this->paginator->currentPage = isset($_SESSION["currentPage"]) ? $_SESSION["currentPage"] : 1;
         session_write_close();
+
+        $path = null;
+        if (isset($_SERVER["PATH_INFO"])) {
+            $path = ucfirst(str_replace("/", "", $_SERVER["PATH_INFO"]));
+        }
+        $this->currNewsList = $this->paginator->start($path);
 
         $totalPages = $this->paginator->getTotalPages();
         $startCount = 1;

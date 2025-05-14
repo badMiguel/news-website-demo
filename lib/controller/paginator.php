@@ -14,11 +14,15 @@ class Paginator
         $this->amountToDisplay = 5;
         $this->currentPage = 1;
         $this->model = $model;
-        $this->totalNews = $this->model->getTotalNewsCount();
+        $this->totalNews = 0;
     }
 
-    public function start(): array
+    public function start(?string $category): array
     {
+        $this->totalNews = $this->model->getTotalNewsCount($category);
+        if ($category) {
+            return $this->model->getNewsListCategory(0, $this->amountToDisplay, $category);
+        }
         return $this->model->getNewsList(0, $this->amountToDisplay);
     }
 

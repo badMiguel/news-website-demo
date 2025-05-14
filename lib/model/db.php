@@ -2,7 +2,7 @@
 
 class Model
 {
-    public PDO $db;
+    private PDO $db;
 
     public function __construct()
     {
@@ -18,8 +18,22 @@ class Model
         }
     }
 
-    public function getTotalNewsCount(): int
+    public function getTotalNewsCount(?string $category): int
     {
+        if ($category) {
+            $statement = $this->db->prepare("
+                SELECT COUNT(*)
+                FROM news n
+                JOIN news_category nc ON nc.news_id = n.news_id
+                JOIN category c ON nc.category_id = c.category_id
+                JOIN user u ON n.author_id = u.user_id
+                WHERE c.category = :category
+            ");
+            $statement->execute(["category" => $category]);
+            $foo = $statement->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
+
+            return $foo;
+        }
         $statement = $this->db->query("SELECT COUNT(*) FROM news");
         return $statement->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
     }
@@ -34,6 +48,24 @@ class Model
             LIMIT :end OFFSET :start
         ");
         $statement->execute(["start" => $start, "end" => $end]);
+        $newsList = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $newsList;
+    }
+
+    public function getNewsListCategory(int $start, int $end, string $category): array
+    {
+        $statement = $this->db->prepare("
+            SELECT n.*,u.user_name AS author
+            FROM news n
+            JOIN news_category nc ON nc.news_id = n.news_id
+            JOIN category c ON nc.category_id = c.category_id
+            JOIN user u ON n.author_id = u.user_id
+            WHERE c.category = :category
+            ORDER BY edited_date DESC
+            LIMIT :end OFFSET :start
+        ");
+        $statement->execute(["start" => $start, "end" => $end, "category" => $category]);
         $newsList = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $newsList;

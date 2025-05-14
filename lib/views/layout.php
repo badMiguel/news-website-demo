@@ -35,14 +35,14 @@
         <nav class="nav--container">
             <ul class="nav--list">
                 <li><a href="/">Home</a></li>
-                <li><a href="/">News</a></li>
-                <li><a href="/">Sports</a></li>
-                <li><a href="/">Business</a></li>
-                <li><a href="/">Travel</a></li>
-                <li><a href="/">Culture</a></li>
+                <li><a href="/world">World</a></li>
+                <li><a href="/politics">Politics</a></li>
+                <li><a href="/business">Business</a></li>
+                <li><a href="/technology">Technology</a></li>
+                <li><a href="/entertainment">Entertainment</a></li>
+                <li><a href="/sports">Sports</a></li>
             </ul>
         </nav>
-
     </header>
     <main class="main--container">
         <div class="main--spacing">
