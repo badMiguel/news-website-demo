@@ -80,15 +80,22 @@ class Paginator
         return [$pageStart ?? 0, $pageEnd ?? 0];
     }
 
-    public function skipToPage(int $currentPage): array
+    public function skipToPage(int $currentPage, ?string $category): array
     {
-        session_start();
-        $_SESSION["currentPage"] = $currentPage;
-        session_write_close();
+        /* i forgot why i added this but currently causing issue so commenting out 
+         *
+         * session_start();
+         * $_SESSION["currentPage"] = $currentPage;
+         * session_write_close();
+         */
 
         $this->currentPage = $currentPage;
 
         $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
+
+        if ($category) {
+            return $this->model->getNewsListCategory($currIdx, $this->amountToDisplay, $category);
+        }
         return $this->model->getNewsList($currIdx, $this->amountToDisplay);
     }
 

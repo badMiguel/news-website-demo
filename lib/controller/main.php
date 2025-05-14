@@ -32,9 +32,12 @@ class Application
 
     public function index(): void
     {
-        session_start();
-        $this->paginator->currentPage = isset($_SESSION["currentPage"]) ? $_SESSION["currentPage"] : 1;
-        session_write_close();
+        /* i forgot why i added this but currently causing issue so commenting out 
+         *
+         * session_start();
+         * $this->paginator->currentPage = isset($_SESSION["currentPage"]) ? $_SESSION["currentPage"] : 1;
+         * session_write_close();
+         */
 
         $path = null;
         if (isset($_SERVER["PATH_INFO"])) {
@@ -55,6 +58,7 @@ class Application
                 }
             }
 
+
             $page = $this->paginator->currentPage;
             if (isset($_GET["page"]) && $_GET["page"] < $totalPages) {
                 $page = (int) $_GET["page"];
@@ -64,7 +68,7 @@ class Application
                 $startCount = 0;
             }
 
-            $this->currNewsList = $this->paginator->skipToPage($page);
+            $this->currNewsList = $this->paginator->skipToPage($page, $path);
         }
         $pageInfo = $this->paginator->getPageRange();
 
