@@ -39,8 +39,19 @@ class Application
          * session_write_close();
          */
 
-        $this->currNewsList = $this->paginator->start(null);
-        $data = ["currNewsList" => $this->currNewsList];
+        $latestNews = $this->model->getLatestNews();
+        $recentNewsPerCategory = [
+            "world" => $this->model->getNewsListByCategory(0, 5, "world"),
+            "politics" => $this->model->getNewsListByCategory(0, 5, "Politics"),
+            "business" => $this->model->getNewsListByCategory(0, 5, "Business"),
+            "technology" => $this->model->getNewsListByCategory(0, 5, "Technology"),
+            "entertainment" => $this->model->getNewsListByCategory(0, 5, "Entertainment"),
+            "sports" => $this->model->getNewsListByCategory(0, 5, "Sports"),
+        ];
+        $data = [
+            "latestNews" => $latestNews,
+            "recentNewsPerCategory" => $recentNewsPerCategory,
+        ];
         $this->render("home", $data);
     }
 

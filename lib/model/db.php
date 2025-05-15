@@ -121,6 +121,27 @@ class Model
             exit();
         }
     }
+
+    public function getLatestNews(): ?array
+    {
+        try {
+            $statement = $this->db->query("
+                SELECT * FROM news ORDER BY edited_date DESC LIMIT 1
+            ");
+            $latestNews = [$statement->fetch(PDO::FETCH_ASSOC)];
+
+            if (!$latestNews[0]) {
+                return null;
+            }
+
+            $this->getNewsCategory($latestNews);
+            return $latestNews;
+        } catch (PDOException $err) {
+            error_log("Error getting latest news: " . $err->getMessage());
+            header("HTTP/1.1 500 Internal Server Error");
+            echo "Sorry, something went wrong. Please try again later.";
+            exit();
+        }
     }
 
     public function getUserByUsername(string $username): ?array

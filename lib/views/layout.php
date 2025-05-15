@@ -21,10 +21,10 @@
                 <?php
                 session_start();
                 if (isset($_SESSION['username'])) {
-                    echo "
-                        <p><a href='/news/create'>Create</a></p>
-                        <p><a href='/logout'>Logout</a></p>
-                    ";
+                    if ($_SESSION['privilege'] >= JOURNALIST) {
+                        echo "<p><a href='/news/create'>Create</a></p>";
+                    }
+                    echo "<p><a href='/logout'>Logout</a></p>";
                 } else {
                     echo "<p><a href='/login'>Login</a></p>";
                 }
