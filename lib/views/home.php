@@ -11,8 +11,8 @@
             <?php endif; ?>
             <div class="category--container">
                 <p>Category:</p>
-                <?php foreach ($currNewsList[0]["category"] as $c): ?>
-                    <p><?= $c["category"] ?></p>
+                <?php foreach ($currNewsList[0]["category"] as $category): ?>
+                    <p><?= $category ?></p>
                 <?php endforeach; ?>
             </div>
             <p>Created: <em><?= htmlspecialchars($currNewsList[0]["created_date"]) ?></em></p>
@@ -38,8 +38,8 @@
             <?php endif; ?>
             <div class="category--container">
                 <p>Category:</p>
-                <?php foreach ($currNewsList[$i]["category"] as $c): ?>
-                    <p><?= $c["category"] ?></p>
+                <?php foreach ($currNewsList[$i]["category"] as $category): ?>
+                    <p><?= $category ?></p>
                 <?php endforeach; ?>
             </div>
             <p>Created: <em><?= htmlspecialchars($currNewsList[$i]["created_date"]) ?></em></p>

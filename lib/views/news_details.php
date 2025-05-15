@@ -13,8 +13,8 @@ if (!$newsDetails) {
 <p><strong>Author:</strong> <?php echo htmlspecialchars($newsDetails[0]['author'] ?? 'Unknown'); ?></p>
 <div class="category--container">
     <p><strong>Category:</strong></p>
-    <?php foreach ($newsDetails[0]['category'] as $c): ?>
-        <p><?php echo htmlspecialchars($c['category']); ?></p>
+    <?php foreach ($newsDetails[0]['category'] as $category): ?>
+        <p><?php echo htmlspecialchars($category); ?></p>
     <?php endforeach ?>
 </div>
 <p><strong>Created:</strong> <?php echo htmlspecialchars($newsDetails[0]['created_date']); ?></p>

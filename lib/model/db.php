@@ -50,7 +50,7 @@ class Model
 
             $categories = [];
             for ($j = 0; $j < count($categoryList); $j++) {
-                array_push($categories, $categoryList[$j]);
+                array_push($categories, $categoryList[$j]["category"]);
             }
             $newsList[$i]["category"] = $categories;
         }
@@ -168,20 +168,41 @@ class Model
         }
     }
 
-    public function updateNewsInDB(int $newsId): void
-    {
+    public function updateNewsInDB(
+        int $newsId,
+        string $newsTitle,
+        string $newsSummary,
+        string $newsBody,
+        array $categoryIdList
+    ): void {
         try {
-            $statement = $this->db->prepare("
+            $this->db->beginTransaction();
+
+            $statement1 = $this->db->prepare("
                 UPDATE news 
                 SET news_title = :title, news_subtitle = :summary, body = :body, edited_date = CURRENT_TIMESTAMP
                 WHERE news_id = :newsId
             ");
-            $statement->execute([
-                "title" => $_POST["news_title"],
-                "summary" => $_POST["news_subtitle"],
-                "body" => $_POST["body"],
+            $statement1->execute([
                 "newsId" => $newsId,
+                "title" => $newsTitle,
+                "summary" => $newsSummary,
+                "body" => $newsBody,
             ]);
+
+            $statement2 = $this->db->prepare("DELETE FROM news_category WHERE news_id = :newsId");
+            $statement2->execute(["newsId" => $newsId]);
+
+            foreach ($categoryIdList as $category) {
+                $statement3 = $this->db->prepare("
+                    INSERT INTO news_category (news_id, category_id) VALUES (:newsId, :categoryId)
+                ");
+                $statement3->execute(["newsId" => $newsId, "categoryId" => $category]);
+            }
+
+            if (!$this->db->commit()) {
+                throw new Exception("Transaction failed while editing {$_POST["news_id"]}");
+            }
         } catch (PDOException $err) {
             error_log("Error updating news in DB: " . $err->getMessage());
             header("HTTP/1.1 500 Internal Server Error");

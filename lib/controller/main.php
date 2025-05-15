@@ -118,6 +118,7 @@ class Application
                 $_SESSION['privilege'] = $user['privilege'];
                 session_write_close();
 
+
                 header('Location: /');
                 exit;
             } else {
@@ -187,8 +188,7 @@ class Application
             !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
             !isset($_POST["news_subtitle"]) || $_POST["news_subtitle"] === "" ||
             !isset($_POST["body"]) || $_POST["body"] === "" ||
-            !isset($_POST["category"]) || $_POST["category"] === [] ||
-            !isset($_SESSION['user_id'])
+            !isset($_POST["category"]) || $_POST["category"] === []
         ) {
             session_start();
             $_SESSION["newsCreateStatus"] = false;
@@ -234,10 +234,12 @@ class Application
         $this->checkPrivilege(EDITOR);
 
         $newsDetails = $this->model->getNewsDetails((int) $_GET["id"]);
+        $categoryList = $this->model->getCategoryList();
 
         $data = [
             "title" => "Edit News",
             "newsDetails" => $newsDetails,
+            "categoryList" => $categoryList,
         ];
         $this->render("edit_news", $data);
     }
@@ -250,7 +252,8 @@ class Application
             !isset($_POST["news_id"]) || $_POST["news_id"] === "" ||
             !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
             !isset($_POST["news_subtitle"]) || $_POST["news_subtitle"] === "" ||
-            !isset($_POST["body"]) || $_POST["body"] === ""
+            !isset($_POST["body"]) || $_POST["body"] === "" ||
+            !isset($_POST["category"]) || $_POST["category"] === []
         ) {
             session_start();
             $_SESSION["newsEditStatus"] = false;
@@ -260,7 +263,19 @@ class Application
             exit();
         }
 
-        $this->model->updateNewsInDB((int) $_POST["news_id"]);
+        $newsId = (int) $_POST["news_id"];
+        $newsTitle = $_POST["news_title"];
+        $newsSummary = $_POST["news_subtitle"];
+        $newsBody = $_POST["body"];
+        $categoryIdList = $_POST["category"];
+
+        $this->model->updateNewsInDB(
+            newsId: $newsId,
+            newsTitle: $newsTitle,
+            newsSummary: $newsSummary,
+            newsBody: $newsBody,
+            categoryIdList: $categoryIdList
+        );
 
         session_start();
         $_SESSION["newsEditStatus"] = true;
