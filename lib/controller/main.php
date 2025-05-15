@@ -60,7 +60,7 @@ class Application
 
 
             $page = $this->paginator->currentPage;
-            if (isset($_GET["page"]) && $_GET["page"] < $totalPages) {
+            if (isset($_GET["page"]) && $_GET["page"] <= $totalPages && $_GET["page"] >= 0) {
                 $page = (int) $_GET["page"];
             }
 
@@ -133,7 +133,7 @@ class Application
             !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
             !isset($_POST["news_subtitle"]) || $_POST["news_subtitle"] === "" ||
             !isset($_POST["body"]) || $_POST["body"] === "" ||
-            !isset($_POST["category"]) || $_POST["category"] === ""
+            !isset($_POST["category"]) || $_POST["category"] === []
         ) {
             session_start();
             $_SESSION["newsCreateStatus"] = false;
@@ -157,13 +157,13 @@ class Application
             $newsTitle = $_POST["news_title"];
             $newsSummary = $_POST["news_subtitle"];
             $newsBody = $_POST["body"];
-            $category = $_POST["category"];
+            $categoryIdList = $_POST["category"];
 
             $this->model->addNewsToDB(
                 newsTitle: $newsTitle,
                 newsSummary: $newsSummary,
                 newsBody: $newsBody,
-                category: $category,
+                categoryIdList: $categoryIdList,
             );
 
             session_start();
