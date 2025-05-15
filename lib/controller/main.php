@@ -95,94 +95,6 @@ class Application
         $this->render("news_details", $data);
     }
 
-    public function createNews(): void
-    {
-        $this->checkPrivilege(JOURNALIST);
-        $categoryList = $this->model->getCategoryList();
-
-        $data = [
-            "title" => "Create News",
-            "categoryList" => $categoryList
-        ];
-        $this->render("create_news", $data);
-    }
-
-    public function createNewsSubmit(): void
-    {
-        $this->checkPrivilege(JOURNALIST);
-
-        /**
-         * TODO 
-         * - need to implement the csrf on the forms too
-         *
-         * if (
-         *     !isset($_POST["csrf_token"], $_SESSION["csrf_token"]) ||
-         *     $_POST["csrf_token"] !== $_SESSION["csrf_token"]
-         * ) {
-         *     session_start();
-         *     $_SESSION["newsCreateStatus"] = false;
-         *     $_SESSION["newsCreateError"] = "Invalid CSRF token.";
-         *     session_write_close();
-         * 
-         *     header("Location: /news/create");
-         *     exit();
-         * }
-         */
-
-        if (
-            !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
-            !isset($_POST["news_subtitle"]) || $_POST["news_subtitle"] === "" ||
-            !isset($_POST["body"]) || $_POST["body"] === "" ||
-            !isset($_POST["category"]) || $_POST["category"] === []
-        ) {
-            session_start();
-            $_SESSION["newsCreateStatus"] = false;
-            session_write_close();
-
-            header("Location: /news/create");
-            exit();
-        }
-
-        if (!isset($_SESSION['user_id'])) {
-            session_start();
-            $_SESSION["newsCreateStatus"] = false;
-            session_write_close();
-
-            header("Location: /news/create");
-            exit();
-        }
-
-        try {
-
-            $newsTitle = $_POST["news_title"];
-            $newsSummary = $_POST["news_subtitle"];
-            $newsBody = $_POST["body"];
-            $categoryIdList = $_POST["category"];
-
-            $this->model->addNewsToDB(
-                newsTitle: $newsTitle,
-                newsSummary: $newsSummary,
-                newsBody: $newsBody,
-                categoryIdList: $categoryIdList,
-            );
-
-            session_start();
-            $_SESSION["newsCreateStatus"] = true;
-            session_write_close();
-
-            header("Location: /news/create");
-            exit();
-        } catch (Exception $e) {
-            session_start();
-            $_SESSION["newsCreateStatus"] = false;
-            $_SESSION["newsCreateError"] = $e->getMessage();
-            session_write_close();
-
-            header("Location: /news/create");
-            exit();
-        }
-    }
-
     public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -235,6 +147,86 @@ class Application
             exit;
         }
         session_write_close();
+    }
+
+    public function createNews(): void
+    {
+        $this->checkPrivilege(JOURNALIST);
+        $categoryList = $this->model->getCategoryList();
+
+        $data = [
+            "title" => "Create News",
+            "categoryList" => $categoryList
+        ];
+        $this->render("create_news", $data);
+    }
+
+    public function createNewsSubmit(): void
+    {
+        $this->checkPrivilege(JOURNALIST);
+
+        /**
+         * TODO 
+         * - need to implement the csrf on the forms too
+         *
+         * if (
+         *     !isset($_POST["csrf_token"], $_SESSION["csrf_token"]) ||
+         *     $_POST["csrf_token"] !== $_SESSION["csrf_token"]
+         * ) {
+         *     session_start();
+         *     $_SESSION["newsCreateStatus"] = false;
+         *     $_SESSION["newsCreateError"] = "Invalid CSRF token.";
+         *     session_write_close();
+         * 
+         *     header("Location: /news/create");
+         *     exit();
+         * }
+         */
+
+        if (
+            !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||
+            !isset($_POST["news_subtitle"]) || $_POST["news_subtitle"] === "" ||
+            !isset($_POST["body"]) || $_POST["body"] === "" ||
+            !isset($_POST["category"]) || $_POST["category"] === [] ||
+            !isset($_SESSION['user_id'])
+        ) {
+            session_start();
+            $_SESSION["newsCreateStatus"] = false;
+            session_write_close();
+
+            header("Location: /news/create");
+            exit();
+        }
+
+        try {
+
+            $newsTitle = $_POST["news_title"];
+            $newsSummary = $_POST["news_subtitle"];
+            $newsBody = $_POST["body"];
+            $categoryIdList = $_POST["category"];
+
+            $this->model->addNewsToDB(
+                newsTitle: $newsTitle,
+                newsSummary: $newsSummary,
+                newsBody: $newsBody,
+                categoryIdList: $categoryIdList,
+            );
+
+            session_start();
+            $_SESSION["newsCreateStatus"] = true;
+            session_write_close();
+
+            header("Location: /news/create");
+            exit();
+        } catch (Exception $e) {
+            session_start();
+            $_SESSION["newsCreateStatus"] = false;
+            $_SESSION["newsCreateError"] = $e->getMessage();
+            session_write_close();
+
+            header("Location: /news/create");
+            exit();
+        }
     }
 
     public function editNews(): void
