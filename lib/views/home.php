@@ -9,6 +9,12 @@
             <?php if ($currNewsList[0]["author"]): ?>
                 <p>Author: <?= htmlspecialchars($currNewsList[0]["author"]) ?></p>
             <?php endif; ?>
+            <div class="category--container">
+                <p>Category:</p>
+                <?php foreach ($currNewsList[0]["category"] as $c): ?>
+                    <p><?= $c["category"] ?></p>
+                <?php endforeach; ?>
+            </div>
             <p>Created: <em><?= htmlspecialchars($currNewsList[0]["created_date"]) ?></em></p>
             <p>Edited: <em><?= htmlspecialchars($currNewsList[0]["edited_date"]) ?></em></p>
         </div>
@@ -30,6 +36,12 @@
             <?php if ($currNewsList[$i]["author"]): ?>
                 <p>Author: <?= htmlspecialchars($currNewsList[$i]["author"]) ?></p>
             <?php endif; ?>
+            <div class="category--container">
+                <p>Category:</p>
+                <?php foreach ($currNewsList[$i]["category"] as $c): ?>
+                    <p><?= $c["category"] ?></p>
+                <?php endforeach; ?>
+            </div>
             <p>Created: <em><?= htmlspecialchars($currNewsList[$i]["created_date"]) ?></em></p>
             <p>Edited: <em><?= htmlspecialchars($currNewsList[$i]["edited_date"]) ?></em></p>
         </div>

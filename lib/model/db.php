@@ -36,6 +36,26 @@ class Model
         return $statement->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
     }
 
+    private function getNewsCategory(array &$newsList): void
+    {
+        for ($i = 0; $i < count($newsList); $i++) {
+            $statement = $this->db->prepare("
+                SELECT c.category
+                FROM category c
+                JOIN news_category nc ON nc.category_id = c.category_id
+                WHERE nc.news_id = :newsId
+            ");
+            $statement->execute(["newsId" => $newsList[$i]["news_id"]]);
+            $categoryList = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            $categories = [];
+            for ($j = 0; $j < count($categoryList); $j++) {
+                array_push($categories, $categoryList[$j]);
+            }
+            $newsList[$i]["category"] = $categories;
+        }
+    }
+
     public function getNewsList(int $start, int $end): array
     {
         $statement = $this->db->prepare("
@@ -47,6 +67,8 @@ class Model
         ");
         $statement->execute(["start" => $start, "end" => $end]);
         $newsList = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->getNewsCategory($newsList);
 
         return $newsList;
     }
@@ -65,6 +87,8 @@ class Model
         ");
         $statement->execute(["start" => $start, "end" => $end, "category" => $category]);
         $newsList = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->getNewsCategory($newsList);
 
         return $newsList;
     }
@@ -85,7 +109,9 @@ class Model
             WHERE news_id = :news_id
         ");
         $statement->execute(["news_id" => $id]);
-        $newsDetails = $statement->fetch(PDO::FETCH_ASSOC);
+        $newsDetails = [$statement->fetch(PDO::FETCH_ASSOC)];
+
+        $this->getNewsCategory($newsDetails);
 
         if (!$newsDetails) {
             return null;

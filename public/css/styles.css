@@ -100,10 +100,12 @@ nav {
     gap: 1rem;
 }
 
-.page-number--next-prev {
+.page-number--next-prev,
+.page-number--number {
     text-align: center;
 }
 
-.page-number--number {
-    text-align: center;
+.category--container {
+    display: flex;
+    gap: 1rem;
 }
