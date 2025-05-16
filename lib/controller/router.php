@@ -42,6 +42,8 @@ class Router
 
             "/login"                => [$this->app, "login"],
             "/logout"               => [$this->app, "logout"],
+
+            "/admin"                => [$this->app, "admin"],
         ];
     }
 

@@ -331,6 +331,41 @@ class Application
         session_write_close();
     }
 
+    public function admin(): void 
+    {
+        $this->currNewsList = $this->paginator->start(null);
+        $totalPages = $this->paginator->getTotalPages();
+        $pageInfo = $this->paginator->getPageRange();
+
+        if (isset($_GET["page"]) || isset($_GET["display"])) {
+            if (isset($_GET["display"])) {
+                $this->paginator->changeAmountToDisplay((int) $_GET["display"]);
+                $totalPages = $this->paginator->getTotalPages();
+
+                if ($this->paginator->currentPage > $totalPages) {
+                    $this->paginator->currentPage = $totalPages;
+                }
+            }
+
+            $page = $this->paginator->currentPage;
+            if (isset($_GET["page"]) && $_GET["page"] <= $totalPages && $_GET["page"] >= 0) {
+                $page = (int) $_GET["page"];
+            }
+
+            $this->currNewsList = $this->paginator->skipToPage($page, null);
+        }
+
+        $data = [
+            "newsList" => $this->currNewsList,
+            "totalPages" => $totalPages,
+            "currentPage" => $this->paginator->currentPage,
+            "pageStart" => $pageInfo[0],
+            "pageEnd" => $pageInfo[1],
+        ];
+
+        $this->render("admin", $data);
+    }
+
     public function pageNotFound(): void
     {
         $this->render("404", []);
