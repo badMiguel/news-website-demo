@@ -47,7 +47,7 @@
         </div>
     </header>
     <main class="main--container">
-        <?php if ($isHome): ?>
+        <?php if (isset($isHome) && $isHome): ?>
             <div class="home--container">
                 <?php require_once $viewPath; ?>
             </div>
