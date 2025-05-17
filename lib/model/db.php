@@ -126,7 +126,11 @@ class Model
     {
         try {
             $statement = $this->db->query("
-                SELECT * FROM news ORDER BY edited_date DESC LIMIT 1
+                SELECT *,u.user_name as author
+                FROM news n
+                JOIN user u ON u.user_id = n.author_id
+                ORDER BY edited_date DESC 
+                LIMIT 1
             ");
             $latestNews = [$statement->fetch(PDO::FETCH_ASSOC)];
 

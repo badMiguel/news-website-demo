@@ -50,7 +50,7 @@ class Application
         ];
 
         $data = [
-            "latestNews" => $latestNews,
+            "latestNews" => $latestNews[0],
             "recentNewsPerCategory" => $recentNewsPerCategory,
             "isHome" => true,
         ];
@@ -332,7 +332,7 @@ class Application
         session_write_close();
     }
 
-    public function admin(): void 
+    public function admin(): void
     {
         $this->currNewsList = $this->paginator->start(null);
         $totalPages = $this->paginator->getTotalPages();

@@ -3,23 +3,23 @@
         <?php if ($latestNews === null): ?>
             <p>There are currently no news.</p>
         <?php else: ?>
-            <?php $news = $latestNews[0] ?>
             <div class="top-news--container">
                 <h3>Just In</h3>
                 <div class="top-news--card">
-                    <h1 class="top-news--title"><a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>"><?= htmlspecialchars($news["news_title"]) ?></a></h1>
+                    <h1 class="top-news--title"><a href="/news?id=<?= htmlspecialchars($latestNews["news_id"]) ?>"><?= htmlspecialchars($latestNews["news_title"]) ?></a></h1>
                     <div class="top-news--details">
-                        <p><?= htmlspecialchars($news["news_subtitle"]) ?></p>
+                        <p><?= htmlspecialchars($latestNews["news_subtitle"]) ?></p>
                         <br>
-                        <?php if ($news["author"]): ?>
-                            <p>Author: <?= htmlspecialchars($news["author"]) ?></p>
+                        <?php if ($latestNews["author"]): ?>
+                            <p>Author: <?= htmlspecialchars($latestNews["author"]) ?></p>
                         <?php endif; ?>
                         <div class="category--container">
                             <p>Category:</p>
-                            <?php foreach ($news["category"] as $category): ?>
+                            <?php foreach ($latestNews["category"] as $category): ?>
                                 <p><?= $category ?></p>
                             <?php endforeach; ?>
                         </div>
+                        <?php $news = $latestNews ?>
                         <?php require VIEWS . "time_ago_display.php" ?>
                     </div>
                 </div>
