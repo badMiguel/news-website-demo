@@ -8,19 +8,18 @@
                 <div class="top-news--card">
                     <h1 class="top-news--title"><a href="/news?id=<?= htmlspecialchars($latestNews["news_id"]) ?>"><?= htmlspecialchars($latestNews["news_title"]) ?></a></h1>
                     <div class="top-news--details">
-                        <p><?= htmlspecialchars($latestNews["news_subtitle"]) ?></p>
-                        <br>
-                        <?php if ($latestNews["author"]): ?>
-                            <p>Author: <?= htmlspecialchars($latestNews["author"]) ?></p>
-                        <?php endif; ?>
+                        <p class="top-news--subtitle"><?= htmlspecialchars($latestNews["news_subtitle"]) ?></p>
+                        <div class="top-news--author-time">
+                            <p class="top-news--author">By: <?= htmlspecialchars($latestNews["author"]) ?></p>
+                            <?php $news = $latestNews ?>
+                            <p class="top-news--time"><?php require VIEWS . "time_ago_display.php" ?></p>
+                        </div>
                         <div class="category--container">
-                            <p>Category:</p>
+                            <!-- <p class="category--label">Category:</p> -->
                             <?php foreach ($latestNews["category"] as $category): ?>
-                                <p><?= $category ?></p>
+                                <p class="category--name"><?= $category ?></p>
                             <?php endforeach; ?>
                         </div>
-                        <?php $news = $latestNews ?>
-                        <?php require VIEWS . "time_ago_display.php" ?>
                     </div>
                 </div>
             </div>
@@ -42,17 +41,14 @@
                     class="news-category--card">
                     <h1 class="category-title"><?= htmlspecialchars($newsListKey) ?></h1>
                     <?php foreach ($newsList as $news): ?>
-                        <h2 class="news-title">
+                        <h2 class="home-news--title">
                             <a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>">
                                 <?= htmlspecialchars($news["news_title"]) ?>
                             </a>
                         </h2>
-                        <p class="news-subtitle"><?= htmlspecialchars($news["news_subtitle"]) ?></p>
-                        <?php if ($news["author"]): ?>
-                            <p>Author: <?= htmlspecialchars($news["author"]) ?></p>
-                        <?php endif; ?>
-
-                        <?php require VIEWS . "time_ago_display.php" ?>
+                        <p class="home-news--subtitle"><?= htmlspecialchars($news["news_subtitle"]) ?></p>
+                        <p class="home-news--author">By: <?= htmlspecialchars($news["author"]) ?></p>
+                        <p class="home-news--time"><?php require VIEWS . "time_ago_display.php" ?></p>
                     <?php endforeach; ?>
                 </div>
             </div>

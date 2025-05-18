@@ -15,17 +15,18 @@ if (count($currNewsList) < 1) {
             </a>
         </h2>
         <p><?= htmlspecialchars($news["news_subtitle"]) ?></p>
-        <br>
-        <?php if ($news["author"]): ?>
-            <p>Author: <?= htmlspecialchars($news["author"]) ?></p>
-        <?php endif; ?>
+
+        <div class="news--author-time">
+            <p>By: <?= htmlspecialchars($news["author"]) ?></p>
+            <p><?php require VIEWS . "time_ago_display.php" ?></p>
+        </div>
+
         <div class="category--container">
-            <p>Category:</p>
             <?php foreach ($news["category"] as $category): ?>
-                <p><?= $category ?></p>
+                <p class="category--name"><?= $category ?></p>
             <?php endforeach; ?>
         </div>
-        <?php require VIEWS . "time_ago_display.php" ?>
+
     </div>
     <hr>
 <?php endforeach; ?>

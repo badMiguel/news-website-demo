@@ -14,13 +14,7 @@ if (!$newsDetails) {
 ?>
 
 <h1 class="news-title"><?php echo htmlspecialchars($newsDetails['news_title']); ?></h1>
-<p><strong>Author:</strong> <?php echo htmlspecialchars($newsDetails['author'] ?? 'Unknown'); ?></p>
-<div class="category--container">
-    <p><strong>Category:</strong></p>
-    <?php foreach ($newsDetails['category'] as $category): ?>
-        <p><?php echo htmlspecialchars($category); ?></p>
-    <?php endforeach ?>
-</div>
+<p><strong>By:</strong> <?php echo htmlspecialchars($newsDetails['author']); ?></p>
 
 <?php
 $created = new DateTime($newsDetails["created_date"]);
@@ -51,6 +45,13 @@ if ($created != $edited) {
 }
 
 ?>
+
+<div class="category--container">
+    <?php foreach ($newsDetails['category'] as $category): ?>
+        <p class="category--name"><?php echo htmlspecialchars($category); ?></p>
+    <?php endforeach ?>
+</div>
+
 <p class="news-subtitle"><?php echo htmlspecialchars($newsDetails['news_subtitle']); ?></p>
 <p class="body"><?php echo nl2br(htmlspecialchars($newsDetails['body'])); ?></p>
 
