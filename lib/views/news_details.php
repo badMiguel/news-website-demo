@@ -14,46 +14,61 @@ if (!$newsDetails) {
 ?>
 
 <h1 class="news-title"><?php echo htmlspecialchars($newsDetails['news_title']); ?></h1>
-<p><strong>By:</strong> <?php echo htmlspecialchars($newsDetails['author']); ?></p>
+<p>By: <?php echo htmlspecialchars($newsDetails['author']); ?></p>
+<div class="created-edited-time">
+    <?php
+    $created = new DateTime($newsDetails["created_date"]);
+    $edited = new DateTime($newsDetails["edited_date"]);
+    $now = new DateTime();
+    $createdDiff = $created->diff($now);
+    $editedDiff = $edited->diff($now);
 
-<?php
-$created = new DateTime($newsDetails["created_date"]);
-$edited = new DateTime($newsDetails["edited_date"]);
-$now = new DateTime();
-$createdDiff = $created->diff($now);
-$editedDiff = $edited->diff($now);
-
-$news = $newsDetails;
-require VIEWS . "time_ago_display.php";
-
-if ($created != $edited) {
-    echo "<p>Edited last ";
-    if ($editedDiff->y > 0) {
-        echo htmlspecialchars($editedDiff->y . " year" . add_S($editedDiff->y) . " ago");
-    } else if ($editedDiff->m > 0) {
-        echo htmlspecialchars($editedDiff->m . " month" . add_S($editedDiff->m) . " ago");
-    } else if ($editedDiff->d > 0) {
-        echo htmlspecialchars($editedDiff->d . " day" . add_S($editedDiff->d) . " ago");
-    } else if ($editedDiff->h > 0) {
-        echo htmlspecialchars($editedDiff->h . " hour" . add_S($editedDiff->h) . " ago");
-    } else if ($editedDiff->i > 0) {
-        echo htmlspecialchars($editedDiff->i . " minute" . add_S($editedDiff->i) . " ago");
-    } else if ($editedDiff->s > 0) {
-        echo htmlspecialchars($editedDiff->s . " second" . add_S($editedDiff->s) . " ago");
-    }
+    $news = $newsDetails;
+    echo "<p>";
+    require VIEWS . "time_ago_display.php";
     echo "</p>";
-}
 
-?>
+    if ($created != $edited) {
+        echo "<p>Edited last ";
+        if ($editedDiff->y > 0) {
+            echo htmlspecialchars($editedDiff->y . " year" . add_S($editedDiff->y) . " ago");
+        } else if ($editedDiff->m > 0) {
+            echo htmlspecialchars($editedDiff->m . " month" . add_S($editedDiff->m) . " ago");
+        } else if ($editedDiff->d > 0) {
+            echo htmlspecialchars($editedDiff->d . " day" . add_S($editedDiff->d) . " ago");
+        } else if ($editedDiff->h > 0) {
+            echo htmlspecialchars($editedDiff->h . " hour" . add_S($editedDiff->h) . " ago");
+        } else if ($editedDiff->i > 0) {
+            echo htmlspecialchars($editedDiff->i . " minute" . add_S($editedDiff->i) . " ago");
+        } else if ($editedDiff->s > 0) {
+            echo htmlspecialchars($editedDiff->s . " second" . add_S($editedDiff->s) . " ago");
+        }
+        echo "</p>";
+    }
 
-<?php require VIEWS . "category_display.php"?>
+    ?>
+</div>
 
 <p class="news-subtitle"><?php echo htmlspecialchars($newsDetails['news_subtitle']); ?></p>
 <p class="body"><?php echo nl2br(htmlspecialchars($newsDetails['body'])); ?></p>
 
+<?php require VIEWS . "category_display.php" ?>
+
 <?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] >= EDITOR): ?>
-    <a href="/news/edit?id=<?php echo htmlspecialchars($newsDetails['news_id']); ?>">Edit</a>
-    <a href="/news/delete?id=<?php echo htmlspecialchars($newsDetails['news_id']); ?>" onclick="return confirm('Are you sure you want to delete this news?');">Delete</a>
+    <div class="edit-delete--container">
+        <p class="edit--button">
+            <a href="/news/edit?id=<?php echo htmlspecialchars($newsDetails['news_id']); ?> ">
+                Edit
+            </a>
+        </p>
+        <p class="delete--button">
+            <a
+                href="/news/delete?id=<?php echo htmlspecialchars($newsDetails['news_id']); ?>"
+                onclick="return confirm('Are you sure you want to delete this news?');">
+                Delete
+            </a>
+        </p>
+    </div>
 <?php endif; ?>
 
 <!-- add comment function -->

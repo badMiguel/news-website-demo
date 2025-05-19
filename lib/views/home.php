@@ -34,18 +34,19 @@
             style="background-color: #dadce8;"
             <?php endif ?>>
             <div class="main--spacing">
-                <div
-                    class="news-category--card">
+                <div class="news-category--card-container">
                     <h1 class="category-title"><?= htmlspecialchars($newsListKey) ?></h1>
                     <?php foreach ($newsList as $news): ?>
-                        <h2 class="home-news--title">
-                            <a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>">
-                                <?= htmlspecialchars($news["news_title"]) ?>
-                            </a>
-                        </h2>
-                        <p class="home-news--subtitle"><?= htmlspecialchars($news["news_subtitle"]) ?></p>
-                        <p class="home-news--author">By: <?= htmlspecialchars($news["author"]) ?></p>
-                        <p class="home-news--time"><?php require VIEWS . "time_ago_display.php" ?></p>
+                        <div class="news-category--card">
+                            <h2 class="home-news--title">
+                                <a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>">
+                                    <?= htmlspecialchars($news["news_title"]) ?>
+                                </a>
+                            </h2>
+                            <p class="home-news--subtitle"><?= htmlspecialchars($news["news_subtitle"]) ?></p>
+                            <p class="home-news--author">By: <?= htmlspecialchars($news["author"]) ?></p>
+                            <p class="home-news--time"><?php require VIEWS . "time_ago_display.php" ?></p>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             </div>
