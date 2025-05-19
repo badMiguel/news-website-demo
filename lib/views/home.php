@@ -14,12 +14,9 @@
                             <?php $news = $latestNews ?>
                             <p class="top-news--time"><?php require VIEWS . "time_ago_display.php" ?></p>
                         </div>
-                        <div class="category--container">
-                            <!-- <p class="category--label">Category:</p> -->
-                            <?php foreach ($latestNews["category"] as $category): ?>
-                                <p class="category--name"><?= $category ?></p>
-                            <?php endforeach; ?>
-                        </div>
+
+                        <?php $newsDetails = $latestNews ?>
+                        <?php require VIEWS . "category_display.php" ?>
                     </div>
                 </div>
             </div>

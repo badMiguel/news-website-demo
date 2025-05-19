@@ -46,11 +46,7 @@ if ($created != $edited) {
 
 ?>
 
-<div class="category--container">
-    <?php foreach ($newsDetails['category'] as $category): ?>
-        <p class="category--name"><?php echo htmlspecialchars($category); ?></p>
-    <?php endforeach ?>
-</div>
+<?php require VIEWS . "category_display.php"?>
 
 <p class="news-subtitle"><?php echo htmlspecialchars($newsDetails['news_subtitle']); ?></p>
 <p class="body"><?php echo nl2br(htmlspecialchars($newsDetails['body'])); ?></p>

@@ -21,11 +21,8 @@ if (count($currNewsList) < 1) {
             <p><?php require VIEWS . "time_ago_display.php" ?></p>
         </div>
 
-        <div class="category--container">
-            <?php foreach ($news["category"] as $category): ?>
-                <p class="category--name"><?= $category ?></p>
-            <?php endforeach; ?>
-        </div>
+        <?php $newsDetails = $news ?>
+        <?php require VIEWS . "category_display.php" ?>
 
     </div>
     <hr>
