@@ -343,6 +343,8 @@ class Application
                 exit;
             }
 
+            error_log("Adding comment for news_id: $newsId, user_id: {$_SESSION['user_id']}, comment: $comment");
+
             $this->model->addCommentToDB($newsId, $_SESSION['user_id'], $comment, $parentCommentId);
         }
 

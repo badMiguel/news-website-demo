@@ -92,7 +92,8 @@ if (!$newsDetails) {
 <?php else: ?>
     <div class="comments">
         <?php
-        function displayComments($comments, $level = 0) {
+      
+        function displayComments($comments, $level = 0, $newsId, $commentsEnabled) {
             foreach ($comments as $comment):
         ?>
             <div class="comment" style="margin-left: <?= $level * 20 ?>px; border-left: 2px solid #ccc; padding-left: 10px; margin-bottom: 10px;">
@@ -101,9 +102,9 @@ if (!$newsDetails) {
                     <small>(<?= htmlspecialchars($comment['created_date']) ?>)</small>
                 </p>
                 <p><?= htmlspecialchars($comment['comment']) ?></p>
-                <?php if (isset($_SESSION['user_id']) && $newsDetails['comments_enabled']): ?>
+                <?php if (isset($_SESSION['user_id']) && $commentsEnabled): ?>
                     <form action="/news/comment/add" method="POST" style="margin-top: 5px;">
-                        <input type="hidden" name="news_id" value="<?= htmlspecialchars($newsDetails['news_id']) ?>">
+                        <input type="hidden" name="news_id" value="<?= htmlspecialchars($newsId) ?>">
                         <input type="hidden" name="parent_comment_id" value="<?= htmlspecialchars($comment['comment_id']) ?>">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <textarea name="comment" placeholder="Reply to this comment..." required style="width: 100%; height: 50px;"></textarea>
@@ -111,13 +112,14 @@ if (!$newsDetails) {
                     </form>
                 <?php endif; ?>
                 <?php if (!empty($comment['replies'])): ?>
-                    <?php displayComments($comment['replies'], $level + 1); ?>
+                    <?php displayComments($comment['replies'], $level + 1, $newsId, $commentsEnabled); ?>
                 <?php endif; ?>
             </div>
         <?php
             endforeach;
         }
-        displayComments($newsDetails['comments']);
+   
+        displayComments($newsDetails['comments'], 0, $newsDetails['news_id'], $newsDetails['comments_enabled']);
         ?>
     </div>
 <?php endif; ?>
