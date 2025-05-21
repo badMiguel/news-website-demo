@@ -328,18 +328,20 @@ class Model
         }
     }
 
-    public function addCommentToDB(int $newsId, int $commentorId, string $comment): void
+    public function addCommentToDB(int $newsId, int $commentorId, string $comment, ?int $parentCommentId = null): void
     {
         try {
+            error_log("Adding comment to DB: news_id: $newsId, commentor_id: $commentorId, comment: $comment, parent_comment_id: " . ($parentCommentId ?: 'NULL'));
+        
             $statement = $this->db->prepare("
-                INSERT INTO comment (comment, commentor, news_id)
-                VALUES (:comment, :commentor, :newsId)
+                INSERT INTO comment (comment, commentor, news_id, parent_comment_id)
+                VALUES (:comment, :commentor, :newsId, :parentCommentId)
             ");
             $statement->execute([
                 "comment" => $comment,
                 "commentor" => $commentorId,
                 "newsId" => $newsId,
-                "parentCommentId" => $parentCommentId, 
+                "parentCommentId" => $parentCommentId,
             ]);
         } catch (PDOException $err) {
             error_log("Error adding comment to DB: " . $err->getMessage());

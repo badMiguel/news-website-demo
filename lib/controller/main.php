@@ -97,6 +97,7 @@ class Application
     public function news(): void
     {
         $newsDetails = $this->model->getNewsDetails((int) $_GET["id"]);
+        $newsDetails[0]['comments'] = $newsDetails['comments'];
 
         $data = [
             "title" => $newsDetails[0]["news_title"],
@@ -309,47 +310,55 @@ class Application
 
     public function addComment(): void
     {
-        session_start();
+        session_start(); 
+    
         if (!isset($_SESSION['user_id'])) {
+            session_write_close();
             header('Location: /login');
             exit;
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // CSRF 
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                session_write_close();
                 header("Location: /news?id=" . (int)$_POST['news_id']);
                 exit;
             }
 
             $newsId = (int) $_POST['news_id'];
-            //  Comment activation status check
+
             $newsDetails = $this->model->getNewsDetails($newsId);
             if (!$newsDetails || !$newsDetails[0]['comments_enabled']) {
+                session_write_close();
                 header("Location: /news?id=" . $newsId);
                 exit;
             }
 
             $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
-            if ($comment === null || $comment === "" || strlen($comment) > 1000) { // [수정] 댓글 길이 제한
+            if ($comment === null || $comment === "" || strlen($comment) > 1000) {
+                session_write_close();
                 header("Location: /news?id=" . $newsId);
                 exit;
             }
 
-            // Reply-to-comment handling
+        // Reply-to-comment handling
             $parentCommentId = isset($_POST['parent_comment_id']) ? (int)$_POST['parent_comment_id'] : null;
             if ($parentCommentId && !$this->model->commentExists($parentCommentId)) {
+                session_write_close();
                 header("Location: /news?id=" . $newsId);
                 exit;
             }
 
-            error_log("Adding comment for news_id: $newsId, user_id: {$_SESSION['user_id']}, comment: $comment");
+            error_log("Adding comment for news_id: $newsId, user_id: {$_SESSION['user_id']}, comment: $comment, parent_comment_id: " . ($parentCommentId ?: 'NULL'));
 
             $this->model->addCommentToDB($newsId, $_SESSION['user_id'], $comment, $parentCommentId);
+        
+            session_write_close();
+            header("Location: /news?id=" . $newsId);
+            exit;
         }
-
-        header("Location: /news?id=" . $newsId);
-        exit;
+    
+        session_write_close();
     }
 
     // Method to enable/disable comments

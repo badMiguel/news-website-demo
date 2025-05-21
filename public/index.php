@@ -10,6 +10,11 @@ define("USER", 0);
 define("JOURNALIST", 1);
 define("EDITOR", 2);
 
+session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $path = "/";
 if (isset($_SERVER["PATH_INFO"])) {
     $path = $_SERVER["PATH_INFO"];
