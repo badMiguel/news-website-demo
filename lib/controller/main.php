@@ -310,8 +310,8 @@ class Application
 
     public function addComment(): void
     {
-        session_start(); 
-    
+        session_start();
+
         if (!isset($_SESSION['user_id'])) {
             session_write_close();
             header('Location: /login');
@@ -341,7 +341,7 @@ class Application
                 exit;
             }
 
-        // Reply-to-comment handling
+            // Reply-to-comment handling
             $parentCommentId = isset($_POST['parent_comment_id']) ? (int)$_POST['parent_comment_id'] : null;
             if ($parentCommentId && !$this->model->commentExists($parentCommentId)) {
                 session_write_close();
@@ -352,12 +352,12 @@ class Application
             error_log("Adding comment for news_id: $newsId, user_id: {$_SESSION['user_id']}, comment: $comment, parent_comment_id: " . ($parentCommentId ?: 'NULL'));
 
             $this->model->addCommentToDB($newsId, $_SESSION['user_id'], $comment, $parentCommentId);
-        
+
             session_write_close();
             header("Location: /news?id=" . $newsId);
             exit;
         }
-    
+
         session_write_close();
     }
 
@@ -411,18 +411,9 @@ class Application
             exit;
         }
 
-    
-        $comments = $this->model->getCommentsForNews($newsId);
-        $commentExists = false;
-        foreach ($comments as $comment) {
-            if ($comment['comment_id'] == $commentId) {
-                $commentExists = true;
-                $commentorId = $comment['commentor'];
-                break;
-            }
-        }
+        $commentorId = $this->model->getCommentorId($commentId);
 
-        if (!$commentExists) {
+        if (!$this->model->commentExists($commentId)) {
             header("Location: /news?id=" . $newsId);
             exit;
         }
@@ -449,7 +440,7 @@ class Application
         $newsId = (int)($_POST['news_id'] ?? 0);
         $newComment = filter_input(INPUT_POST, 'new_comment', FILTER_SANITIZE_STRING);
 
-    
+
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             header("Location: /news?id=" . $newsId);
             exit;

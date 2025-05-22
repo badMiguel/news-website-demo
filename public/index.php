@@ -19,6 +19,7 @@ $path = "/";
 if (isset($_SERVER["PATH_INFO"])) {
     $path = $_SERVER["PATH_INFO"];
 }
+session_write_close();
 
 require_once CONTROLLER . "router.php";
 require_once CONTROLLER . "main.php";

@@ -10,6 +10,7 @@ class Model
         try {
             $this->db = new PDO("sqlite:$dbPath");
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->db->exec('PRAGMA foreign_keys = ON');
         } catch (PDOException $err) {
             error_log("Database connection failed: " . $err->getMessage());
             header("HTTP/1.1 500 Internal Server Error");
@@ -176,7 +177,7 @@ class Model
 
             $this->getNewsCategory($newsDetails);
 
-            if (!$newsDetails[0]) { 
+            if (!$newsDetails[0]) {
                 return null;
             }
 
@@ -305,7 +306,7 @@ class Model
             $statement->execute(["newsId" => $newsId]);
             $comments = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-           //reply of a comment
+            //reply of a comment
             $commentTree = [];
             $commentMap = [];
             foreach ($comments as $comment) {
@@ -332,7 +333,7 @@ class Model
     {
         try {
             error_log("Adding comment to DB: news_id: $newsId, commentor_id: $commentorId, comment: $comment, parent_comment_id: " . ($parentCommentId ?: 'NULL'));
-        
+
             $statement = $this->db->prepare("
                 INSERT INTO comment (comment, commentor, news_id, parent_comment_id)
                 VALUES (:comment, :commentor, :newsId, :parentCommentId)
@@ -371,6 +372,24 @@ class Model
         }
     }
 
+    public function getCommentorId(int $commentId): int
+    {
+        try {
+            $statement = $this->db->prepare("
+                SELECT commentor AS commentorId
+                FROM comment
+                WHERE comment_id = :commentId
+            ");
+            $statement->execute(["commentId" => $commentId]);
+            return $statement->fetch(PDO::FETCH_ASSOC)["commentorId"];
+        } catch (PDOException $err) {
+            error_log("Error getting commentor ID: " . $err->getMessage());
+            header("HTTP/1.1 500 Internal Server Error");
+            echo "Sorry, something went wrong. Please try again later.";
+            exit();
+        }
+    }
+
     public function commentExists(int $commentId): bool
     {
         try {
@@ -384,7 +403,8 @@ class Model
             exit();
         }
     }
-public function deleteComment(int $commentId): void
+
+    public function deleteComment(int $commentId): void
     {
         try {
             $statement = $this->db->prepare("DELETE FROM comment WHERE comment_id = :commentId");
