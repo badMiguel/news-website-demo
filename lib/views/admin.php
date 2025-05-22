@@ -10,29 +10,39 @@
         <table border="1">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Title</th>
-                    <th>Subtitle</th>
                     <th>Author</th>
-                    <th>Categories</th>
-                    <th>Created</th>
-                    <th>Edited</th>
+                    <th>Role</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($newsList as $news): ?>
+                    <?php foreach ($newsList as $news): ?>
                     <tr>
-                        <td><?= htmlspecialchars($news['news_id']) ?></td>
                         <td><?= htmlspecialchars($news['news_title']) ?></td>
-                        <td><?= htmlspecialchars($news['news_subtitle']) ?></td>
-                        <td><?= htmlspecialchars($news['author'] ?? 'Unknown') ?></td>
+                        <td><?= htmlspecialchars($news['author'] ?? 'Unknown') ?>
                         <td>
-                            <?php foreach ($news['category'] as $c): ?>
-                                <?= htmlspecialchars($c) ?>,
-                            <?php endforeach; ?>
+                            <?php
+                            $role = 'Unknown';
+                            if (isset($news['privilege'])) {
+                                switch ($news['privilege']) {
+                                    case 0:
+                                        $role = 'User';
+                                        break;
+                                    case 1:
+                                        $role = 'Journalist';
+                                        break;
+                                    case 2:
+                                        $role = 'Editor';
+                                        break;
+                                }
+                            }
+                            echo htmlspecialchars($role);
+                            ?>
+                            <td>
+                            <a href="/news/edit?id=<?= htmlspecialchars($news['news_id']) ?>">Edit</a> |
+                            <a href="/news/delete?id=<?= htmlspecialchars($news['news_id']) ?>" onclick="return confirm('Are you sure you want to delete this news?')">Delete</a>
                         </td>
-                        <td><?= htmlspecialchars($news['created_date']) ?></td>
-                        <td><?= htmlspecialchars($news['edited_date']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

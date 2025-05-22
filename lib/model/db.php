@@ -10,6 +10,7 @@ class Model
         try {
             $this->db = new PDO("sqlite:$dbPath");
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->db->exec('PRAGMA foreign_keys = ON');
         } catch (PDOException $err) {
             error_log("Database connection failed: " . $err->getMessage());
             header("HTTP/1.1 500 Internal Server Error");
@@ -75,7 +76,7 @@ class Model
     {
         try {
             $statement = $this->db->prepare("
-                SELECT news.*,user.user_name AS author
+                SELECT news.*,user.user_name AS author, user.privilege
                 FROM news
                 JOIN user ON news.author_id = user.user_id
                 ORDER BY edited_date DESC
@@ -99,7 +100,7 @@ class Model
     {
         try {
             $statement = $this->db->prepare("
-                SELECT n.*,u.user_name AS author
+                SELECT n.*,u.user_name AS author, u.privilege
                 FROM news n
                 JOIN news_category nc ON nc.news_id = n.news_id
                 JOIN category c ON nc.category_id = c.category_id
@@ -126,7 +127,7 @@ class Model
     {
         try {
             $statement = $this->db->query("
-                SELECT *,u.user_name as author
+                SELECT *,u.user_name as author, u.privilege
                 FROM news n
                 JOIN user u ON u.user_id = n.author_id
                 ORDER BY edited_date DESC 
@@ -166,7 +167,7 @@ class Model
     {
         try {
             $statement = $this->db->prepare("
-                SELECT news.*,user.user_name AS author
+                SELECT news.*,user.user_name AS author, user.privilege
                 FROM news 
                 JOIN user ON news.author_id = user.user_id
                 WHERE news_id = :news_id
