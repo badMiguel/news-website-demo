@@ -158,7 +158,7 @@ class Application
             // session_write_close();
             header('Location: /login');
             exit;
-        }
+        }  
         session_write_close();
     }
 
