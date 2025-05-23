@@ -11,7 +11,7 @@ if (count($currNewsList) < 1) {
     <div class='news--card-container'>
         <div class="news--card">
             <div class="news--image-container">
-                <img class="news--image" src="/../icon.jpg" />
+                <img class="news--image" src="/../images/<?= htmlspecialchars($news["image_path"]) ?>" />
             </div>
             <div class="news--details-container">
                 <h2 class="news--details-title">

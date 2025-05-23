@@ -11,7 +11,7 @@ unset($_SESSION["newsCreateStatus"]);
 session_write_close();
 ?>
 
-<form action="/news/create/submit" method="POST">
+<form action="/news/create/submit" method="POST" enctype="multipart/form-data">
     <label for="news_title">News Title:</label>
     <input type="text" name="news_title" id="news_title" />
 
@@ -20,6 +20,9 @@ session_write_close();
 
     <label for="body">News Body:</label>
     <textarea name="body" id="body"></textarea>
+
+    <label for="image">Select Image:</label>
+    <input type="file" name="image" accept="image/*" />
 
     <p>Category:</p>
     <?php foreach ($categoryList as $c): ?>

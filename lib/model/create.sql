@@ -22,6 +22,7 @@ CREATE TABLE news (
     author_id INTEGER NOT NULL,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     edited_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    image_path TEXT, 
     comments_enabled INTEGER DEFAULT 1,
     FOREIGN KEY(author_id) REFERENCES user(user_id) ON DELETE SET NULL
 );

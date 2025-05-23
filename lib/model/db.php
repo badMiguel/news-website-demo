@@ -195,8 +195,9 @@ class Model
         string $newsTitle,
         string $newsSummary,
         string $newsBody,
-        array $categoryIdList
-    ): void {
+        array $categoryIdList,
+        ?string $imagePath,
+    ): ?string {
         try {
             session_start();
             $authorId = $_SESSION['user_id'];
@@ -206,15 +207,16 @@ class Model
 
             $statement1 = $this->db->prepare("
                 INSERT INTO news 
-                    (news_title, news_subtitle, body, author_id) 
+                    (news_title, news_subtitle, body, author_id, image_path) 
                 VALUES 
-                    (:title, :summary, :body, :authorId)
+                    (:title, :summary, :body, :authorId, :imagePath)
             ");
             $statement1->execute([
                 "title" => $newsTitle,
                 "summary" => $newsSummary,
                 "body" => $newsBody,
                 "authorId" => $authorId,
+                "imagePath" => $imagePath,
             ]);
 
             $statement2 = $this->db->prepare("SELECT news_id FROM news WHERE news_title = :title");
@@ -229,11 +231,9 @@ class Model
             }
 
             $this->db->commit();
+            return null;
         } catch (PDOException $err) {
-            error_log("Error adding news to DB: " . $err->getMessage());
-            header("HTTP/1.1 500 Internal Server Error");
-            echo "Sorry, something went wrong. News was not created. Please try again later.";
-            exit();
+            return $err->getMessage();
         }
     }
 

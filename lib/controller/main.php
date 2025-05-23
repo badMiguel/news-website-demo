@@ -158,8 +158,22 @@ class Application
             // session_write_close();
             header('Location: /login');
             exit;
-        }  
+        }
         session_write_close();
+    }
+
+    public function uploadImage()
+    {
+        $uploadOk = 1;
+
+        // validate file
+        $imgSize = getimagesize($_FILES["image"]["tmp_name"]);
+        if ($imgSize !== false) {
+        } else {
+        }
+
+        if ($uploadOk) {
+        }
     }
 
     public function createNews(): void
@@ -216,13 +230,22 @@ class Application
             $newsSummary = $_POST["news_subtitle"];
             $newsBody = $_POST["body"];
             $categoryIdList = $_POST["category"];
+            $imagePath = $_POST["image"]["name"];
+            $imageTempName = $_POST["image"]["tmp_name"];
 
-            $this->model->addNewsToDB(
+            $addHasError = $this->model->addNewsToDB(
                 newsTitle: $newsTitle,
                 newsSummary: $newsSummary,
                 newsBody: $newsBody,
                 categoryIdList: $categoryIdList,
+                imagePath: $imagePath,
             );
+
+            if ($addHasError) {
+                throw new Exception($addHasError);
+            }
+
+
 
             session_start();
             $_SESSION["newsCreateStatus"] = true;
@@ -237,6 +260,8 @@ class Application
             session_write_close();
 
             header("Location: /news/create");
+            error_log($e->getMessage());
+            echo "Sorry, something went wrong. News was not created. Please try again later.";
             exit();
         }
     }

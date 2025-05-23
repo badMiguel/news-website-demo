@@ -51,7 +51,7 @@ if (!$newsDetails) {
 
 <p class="news-subtitle"><?php echo htmlspecialchars($newsDetails['news_subtitle']); ?></p>
 
-<img class="news-image" src="/../icon.jpg" />
+<img class="news-image" src="/../images/<?= htmlspecialchars($newsDetails["image_path"]) ?>" />
 
 <p class="body"><?php echo nl2br(htmlspecialchars($newsDetails['body'])); ?></p>
 
