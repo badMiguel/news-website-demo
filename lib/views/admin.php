@@ -1,4 +1,3 @@
- 
 <h2>Admin Dashboard - Manage News</h2>
 <?php if (!isset($_SESSION['privilege']) || $_SESSION['privilege'] < 2): ?>
     <p>Access denied. Only editors can view this page.</p>
@@ -17,7 +16,7 @@
                 </tr>
             </thead>
             <tbody>
-                    <?php foreach ($newsList as $news): ?>
+                <?php foreach ($newsList as $news): ?>
                     <tr>
                         <td><?= htmlspecialchars($news['news_title']) ?></td>
                         <td><?= htmlspecialchars($news['author'] ?? 'Unknown') ?>
@@ -39,7 +38,7 @@
                             }
                             echo htmlspecialchars($role);
                             ?>
-                            <td>
+                        <td>
                             <a href="/news/edit?id=<?= htmlspecialchars($news['news_id']) ?>">Edit</a> |
                             <a href="/news/delete?id=<?= htmlspecialchars($news['news_id']) ?>" onclick="return confirm('Are you sure you want to delete this news?')">Delete</a>
                         </td>
