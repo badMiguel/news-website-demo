@@ -31,13 +31,13 @@
                         <p class="top-news--subtitle"><?= htmlspecialchars($latestNews["news_subtitle"]) ?></p>
                         <p class="top-news--author-time">
                             <?php $news = $latestNews ?>
-                            <?php require VIEWS . "time_ago_display.php" ?>
+                            <?php require VIEWS . "partials/time_ago_display.php" ?>
                             <span style="margin: 0 0.3rem;">|</span>
                             <?= htmlspecialchars($latestNews["author"]) ?>
                         </p>
 
                         <?php $newsDetails = $latestNews ?>
-                        <?php require VIEWS . "category_display.php" ?>
+                        <?php require VIEWS . "partials/category_display.php" ?>
                     </div>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                             <?php endif ?>
 
                             <p class="home-news--time-author">
-                                <?php require VIEWS . "time_ago_display.php" ?>
+                                <?php require VIEWS . "partials/time_ago_display.php" ?>
                                 <span style="margin: 0 0.3rem;">|</span>
                                 <?= htmlspecialchars($news["author"]) ?>
                             </p>

@@ -6,7 +6,7 @@
     <?php if (empty($newsList)): ?>
         <p>No news available.</p>
     <?php else: ?>
-        <?php require_once VIEWS . "news_amount.php" ?>
+        <?php require_once VIEWS . "partials/news_amount.php" ?>
         <table border="1">
             <thead>
                 <tr>
@@ -47,6 +47,6 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <?php require_once VIEWS . "page_number.php" ?>
+        <?php require_once VIEWS . "partials/page_number.php" ?>
     <?php endif; ?>
 <?php endif; ?>

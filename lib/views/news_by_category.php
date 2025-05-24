@@ -5,7 +5,7 @@ if (count($currNewsList) < 1) {
 }
 ?>
 
-<?php require VIEWS . "news_amount.php" ?>
+<?php require VIEWS . "partials/news_amount.php" ?>
 
 <?php foreach ($currNewsList as $news): ?>
     <div class='news--card-container'>
@@ -15,7 +15,9 @@ if (count($currNewsList) < 1) {
                 file_exists(IMAGE_DIR . $news["image_path"])
             ): ?>
                 <div class="news--image-container">
-                    <img class="news--image" src="/../images/<?= htmlspecialchars($news["image_path"]) ?>" />
+                    <a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>">
+                        <img class="news--image" src="/../images/<?= htmlspecialchars($news["image_path"]) ?>" />
+                    </a>
                 </div>
             <?php endif ?>
             <div
@@ -36,17 +38,17 @@ if (count($currNewsList) < 1) {
                 <p class="news--details-subtitle"><?= htmlspecialchars($news["news_subtitle"]) ?></p>
 
                 <p class="news--author-time">
-                    <?php require VIEWS . "time_ago_display.php" ?>
+                    <?php require VIEWS . "partials/time_ago_display.php" ?>
                     <span style="margin: 0 0.3rem;">|</span>
                     <?= htmlspecialchars($news["author"]) ?>
                 </p>
 
                 <?php $newsDetails = $news ?>
-                <?php require VIEWS . "category_display.php" ?>
+                <?php require VIEWS . "partials/category_display.php" ?>
             </div>
         </div>
     </div>
     <hr>
 <?php endforeach; ?>
 
-<?php require VIEWS . "page_number.php" ?>
+<?php require VIEWS . "partials/page_number.php" ?>

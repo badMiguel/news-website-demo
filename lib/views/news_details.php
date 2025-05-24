@@ -24,7 +24,7 @@ if (!isset($newsDetails["news_id"])) {
     $editedDiff = $edited->diff($now);
 
     $news = $newsDetails;
-    require VIEWS . "time_ago_display.php";
+    require VIEWS . "partials/time_ago_display.php";
 
     if ($created != $edited) {
         echo "<span style='margin: 0 0.3rem;'>|</span>";
@@ -60,7 +60,7 @@ if (!isset($newsDetails["news_id"])) {
 
 <p class="body"><?php echo nl2br(htmlspecialchars($newsDetails['body'])); ?></p>
 
-<?php require VIEWS . "category_display.php" ?>
+<?php require VIEWS . "partials/category_display.php" ?>
 
 <?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] >= EDITOR): ?>
     <div class="edit-delete--container">

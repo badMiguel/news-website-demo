@@ -1,6 +1,5 @@
 <?php
 
-use parallel\Runtime\Error;
 
 class Model
 {
