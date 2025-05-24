@@ -68,7 +68,8 @@
                                 file_exists(IMAGE_DIR . $news["image_path"])
                             ): ?>
                                 <a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>">
-                                    <img style="width: 100%;" src="/../images/<?= htmlspecialchars($news["image_path"]) ?>" />
+                                    <img style="width: 100%; max-height: 10rem; object-fit: cover; "
+                                        src="/../images/<?= htmlspecialchars($news["image_path"]) ?>" />
                                 </a>
                             <?php endif ?>
                             <h2 class="home-news--title">
