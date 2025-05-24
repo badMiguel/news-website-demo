@@ -36,9 +36,9 @@ if (count($currNewsList) < 1) {
                 <p class="news--details-subtitle"><?= htmlspecialchars($news["news_subtitle"]) ?></p>
 
                 <p class="news--author-time">
-                    <?= htmlspecialchars($news["author"]) ?>
-                    <span style="margin: 0 0.3rem;">|</span>
                     <?php require VIEWS . "time_ago_display.php" ?>
+                    <span style="margin: 0 0.3rem;">|</span>
+                    <?= htmlspecialchars($news["author"]) ?>
                 </p>
 
                 <?php $newsDetails = $news ?>

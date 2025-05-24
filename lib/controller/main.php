@@ -213,14 +213,12 @@ class Application
         $newsSummary = $_POST["news_subtitle"];
         $newsBody = $_POST["body"];
         $categoryIdList = $_POST["category"];
-        $imagePath = $_FILES["image"]["name"];
 
         $addHasError = $this->model->addNewsToDB(
             newsTitle: $newsTitle,
             newsSummary: $newsSummary,
             newsBody: $newsBody,
             categoryIdList: $categoryIdList,
-            imagePath: $imagePath,
         );
 
         // success
@@ -284,7 +282,6 @@ class Application
         $newsSummary = $_POST["news_subtitle"];
         $newsBody = $_POST["body"];
         $categoryIdList = $_POST["category"];
-        $imagePath = $_FILES["image"]["name"];
 
         $updateHasError = $this->model->updateNewsInDB(
             newsId: $newsId,
@@ -292,7 +289,6 @@ class Application
             newsSummary: $newsSummary,
             newsBody: $newsBody,
             categoryIdList: $categoryIdList,
-            imagePath: $imagePath,
         );
 
         // success
@@ -537,4 +533,3 @@ class Application
         $this->render("404", []);
     }
 }
-

@@ -193,10 +193,9 @@ class Model
         }
     }
 
-    private function uploadImage(): ?string
+    private function uploadImage(string $path): ?string
     {
         $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-        $targetPath = IMAGE_DIR . basename($_FILES["image"]["name"]);
 
         // // TODO - remove
         // error_log($targetPath);
@@ -220,15 +219,42 @@ class Model
             return "Invalid file type. Only JPG, JPEG, PNG, and GIF files are allowed";
         }
 
-        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], IMAGE_DIR . $path)) {
             return null;
         } else {
             return "There was an error uploading the image";
         }
     }
 
-    private function deleteImage(string $imagePath): ?string
+    /** 
+     * @return array{0: bool, 1: bool|string} Returns:
+     *      - [0]: Whether an error occurred (true = error, false = no error)
+     *      - [1]: Error message (string) or check indicator (bool)     
+     */
+    private function imageUsedByOthers(string $imagePath, int $newsId): array
     {
+        try {
+            $statement = $this->db->prepare("
+                SELECT news_id 
+                FROM news 
+                WHERE image_path = :imagePath AND NOT news_id = :newsId
+            ");
+            $statement->execute(["imagePath" => $imagePath, "newsId" => $newsId]);
+            if (!$statement->fetch(PDO::FETCH_ASSOC)) {
+                return [true, false];
+            }
+            return [true, true];
+        } catch (PDOException $err) {
+            return [false, $err->getMessage()];
+        }
+    }
+
+    private function deleteImage(string $imagePath, int $newsId): ?string
+    {
+        if ($this->imageUsedByOthers($imagePath, $newsId)) {
+            return null;
+        }
+
         $fullPath = IMAGE_DIR . $imagePath;
         if (file_exists($fullPath) && !unlink($fullPath)) {
             return "Error deleting image";
@@ -241,7 +267,6 @@ class Model
         string $newsSummary,
         string $newsBody,
         array $categoryIdList,
-        ?string $imagePath,
     ): ?string {
         try {
             session_start();
@@ -249,6 +274,18 @@ class Model
             session_write_close();
 
             $this->db->beginTransaction();
+
+            $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+            $counter = 0;
+            do {
+                $newImagePath = bin2hex(random_bytes(16)) . "." . $imageFileType;
+                $counter++;
+                if ($counter === 5) {
+                    throw new Exception("Failed to generate a filename for image");
+                }
+            } while (file_exists(IMAGE_DIR . $newImagePath));
+
+            error_log($newImagePath);
 
             $statement1 = $this->db->prepare("
                 INSERT INTO news 
@@ -261,7 +298,7 @@ class Model
                 "summary" => $newsSummary,
                 "body" => $newsBody,
                 "authorId" => $authorId,
-                "imagePath" => $imagePath,
+                "imagePath" => $newImagePath,
             ]);
 
             $statement2 = $this->db->prepare("SELECT news_id FROM news WHERE news_title = :title");
@@ -275,11 +312,9 @@ class Model
                 $statement3->execute(["newsId" => $news["news_id"], "categoryId" => $categoryId]);
             }
 
-            if ($imagePath) {
-                $uploadHasError = $this->uploadImage();
-                if ($uploadHasError) {
-                    throw new Exception("Failed to upload image: " . $uploadHasError);
-                }
+            $uploadHasError = $this->uploadImage($newImagePath);
+            if ($uploadHasError) {
+                throw new Exception("Failed to upload image: " . $uploadHasError);
             }
 
             $this->db->commit();
@@ -296,7 +331,6 @@ class Model
         string $newsSummary,
         string $newsBody,
         array $categoryIdList,
-        string  $imagePath
     ): ?string {
         try {
             $this->db->beginTransaction();
@@ -306,6 +340,16 @@ class Model
                 throw new Exception("Failed to check news' image path: " . $getOldImagePath[1]);
             }
 
+            $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+            $counter = 0;
+            do {
+                $newImagePath = bin2hex(random_bytes(16)) . "." . $imageFileType;
+                $counter++;
+                if ($counter === 5) {
+                    throw new Exception("Failed to generate a filename for image");
+                }
+            } while (file_exists(IMAGE_DIR . $newImagePath));
+
             $statement1 = $this->db->prepare("
                 UPDATE news 
                 SET 
@@ -314,14 +358,14 @@ class Model
                     body = :body,
                     edited_date = CURRENT_TIMESTAMP,
                     image_path = :imagePath
-                WHERE news_id = :newsId
+                    WHERE news_id = :newsId
             ");
             $statement1->execute([
                 "newsId" => $newsId,
                 "title" => $newsTitle,
                 "summary" => $newsSummary,
                 "body" => $newsBody,
-                "imagePath" => $imagePath,
+                "imagePath" => $newImagePath,
             ]);
 
             $statement2 = $this->db->prepare("DELETE FROM news_category WHERE news_id = :newsId");
@@ -334,9 +378,8 @@ class Model
                 $statement3->execute(["newsId" => $newsId, "categoryId" => $category]);
             }
 
-            if ($imagePath && $getOldImagePath[1] !== $imagePath) {
-                error_log("tmp" . $_FILES["image"]["tmp_name"]);
-                $uploadHasError = $this->uploadImage();
+            if ($newImagePath && $getOldImagePath[1] !== $newImagePath) {
+                $uploadHasError = $this->uploadImage($newImagePath);
                 if ($uploadHasError) {
                     throw new Exception("Failed to upload image: " . $uploadHasError);
                 }
@@ -363,7 +406,7 @@ class Model
             $statement = $this->db->prepare("DELETE FROM news WHERE news_id = :newsId");
             $statement->execute(["newsId" => $newsId]);
 
-            $deleteImgStatus = $this->deleteImage($imagePath[1]);
+            $deleteImgStatus = $this->deleteImage($imagePath[1], $newsId);
             if ($deleteImgStatus) {
                 throw new Exception("Failed to delete image: " . $deleteImgStatus);
             }
