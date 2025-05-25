@@ -1,5 +1,6 @@
 <?php
 
+
 class Model
 {
     private PDO $db;
@@ -76,7 +77,7 @@ class Model
     {
         try {
             $statement = $this->db->prepare("
-                SELECT news.*,user.user_name AS author, user.privilege
+                SELECT news.*,user.full_name AS author, user.privilege
                 FROM news
                 JOIN user ON news.author_id = user.user_id
                 ORDER BY edited_date DESC
@@ -100,7 +101,7 @@ class Model
     {
         try {
             $statement = $this->db->prepare("
-                SELECT n.*,u.user_name AS author, u.privilege
+                SELECT n.*,u.full_name AS author, u.privilege
                 FROM news n
                 JOIN news_category nc ON nc.news_id = n.news_id
                 JOIN category c ON nc.category_id = c.category_id
@@ -127,7 +128,7 @@ class Model
     {
         try {
             $statement = $this->db->query("
-                SELECT *,u.user_name as author, u.privilege
+                SELECT *,u.full_name as author, u.privilege
                 FROM news n
                 JOIN user u ON u.user_id = n.author_id
                 ORDER BY edited_date DESC 
@@ -167,7 +168,7 @@ class Model
     {
         try {
             $statement = $this->db->prepare("
-                SELECT news.*,user.user_name AS author, user.privilege
+                SELECT news.*,user.full_name AS author, user.privilege
                 FROM news 
                 JOIN user ON news.author_id = user.user_id
                 WHERE news_id = :news_id
@@ -191,12 +192,87 @@ class Model
         }
     }
 
+    private function uploadImage(string $path): ?string
+    {
+        $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+
+        // // TODO - remove
+        // error_log($targetPath);
+        // foreach ($_FILES["image"] as $k => $v) {
+        //     error_log($k . " - " . $v);
+        // }
+
+        // validate file
+        $check = getimagesize($_FILES["image"]["tmp_name"]);
+        if ($check === false) {
+            return "Uploaded file is not an image";
+        }
+
+        // check image size
+        if ($_FILES["image"]["size"] > 2000000) {
+            return "Image file is too large.";
+        }
+
+        $allowed = ["jpg", "jpeg", "png", "gif"];
+        if (!in_array($imageFileType, $allowed)) {
+            return "Invalid file type. Only JPG, JPEG, PNG, and GIF files are allowed";
+        }
+
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], IMAGE_DIR . $path)) {
+            return null;
+        } else {
+            return "There was an error uploading the image";
+        }
+    }
+
+    /** 
+     * @return array{0: bool, 1: bool|string} Returns:
+     *      - [0]: Whether an error occurred (true = error, false = no error)
+     *      - [1]: Error message (string) or check indicator (bool)     
+     */
+    private function imageUsedByOthers(string $imagePath, int $newsId): array
+    {
+        try {
+            $statement = $this->db->prepare("
+                SELECT news_id 
+                FROM news 
+                WHERE image_path = :imagePath AND NOT news_id = :newsId
+            ");
+            $statement->execute(["imagePath" => $imagePath, "newsId" => $newsId]);
+            if (!$statement->fetch(PDO::FETCH_ASSOC)) {
+                return [true, false];
+            }
+            return [true, true];
+        } catch (PDOException $err) {
+            return [false, $err->getMessage()];
+        }
+    }
+
+    private function deleteImage(string $imagePath, int $newsId): ?string
+    {
+        $isUsed =  $this->imageUsedByOthers($imagePath, $newsId);
+        if (!$isUsed[0]) {
+            return "Error checking if image used by others: " . $isUsed[1];
+        }
+
+        if ($isUsed[1]) {
+            return null;
+        }
+
+        $fullPath = IMAGE_DIR . $imagePath;
+        error_log($fullPath);
+        if (!file_exists($fullPath) || !unlink($fullPath)) {
+            return "Error deleting image";
+        }
+        return null;
+    }
+
     public function addNewsToDB(
         string $newsTitle,
         string $newsSummary,
         string $newsBody,
-        array $categoryIdList
-    ): void {
+        array $categoryIdList,
+    ): ?string {
         try {
             session_start();
             $authorId = $_SESSION['user_id'];
@@ -204,17 +280,30 @@ class Model
 
             $this->db->beginTransaction();
 
+            $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+            $counter = 0;
+            do {
+                $newImagePath = bin2hex(random_bytes(16)) . "." . $imageFileType;
+                $counter++;
+                if ($counter === 5) {
+                    throw new Exception("Failed to generate a filename for image");
+                }
+            } while (file_exists(IMAGE_DIR . $newImagePath));
+
+            error_log($newImagePath);
+
             $statement1 = $this->db->prepare("
                 INSERT INTO news 
-                    (news_title, news_subtitle, body, author_id) 
+                    (news_title, news_subtitle, body, author_id, image_path) 
                 VALUES 
-                    (:title, :summary, :body, :authorId)
+                    (:title, :summary, :body, :authorId, :imagePath)
             ");
             $statement1->execute([
                 "title" => $newsTitle,
                 "summary" => $newsSummary,
                 "body" => $newsBody,
                 "authorId" => $authorId,
+                "imagePath" => $newImagePath,
             ]);
 
             $statement2 = $this->db->prepare("SELECT news_id FROM news WHERE news_title = :title");
@@ -228,12 +317,16 @@ class Model
                 $statement3->execute(["newsId" => $news["news_id"], "categoryId" => $categoryId]);
             }
 
+            $uploadHasError = $this->uploadImage($newImagePath);
+            if ($uploadHasError) {
+                throw new Exception("Failed to upload image: " . $uploadHasError);
+            }
+
             $this->db->commit();
+            return null;
         } catch (PDOException $err) {
-            error_log("Error adding news to DB: " . $err->getMessage());
-            header("HTTP/1.1 500 Internal Server Error");
-            echo "Sorry, something went wrong. News was not created. Please try again later.";
-            exit();
+            $this->db->rollBack();
+            return $err->getMessage();
         }
     }
 
@@ -242,21 +335,42 @@ class Model
         string $newsTitle,
         string $newsSummary,
         string $newsBody,
-        array $categoryIdList
-    ): void {
+        array $categoryIdList,
+    ): ?string {
         try {
             $this->db->beginTransaction();
 
+            $getOldImagePath = $this->getImagePath($newsId);
+            if (!$getOldImagePath[0]) {
+                throw new Exception("Failed to check news' image path: " . $getOldImagePath[1]);
+            }
+
+            $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+            $counter = 0;
+            do {
+                $newImagePath = bin2hex(random_bytes(16)) . "." . $imageFileType;
+                $counter++;
+                if ($counter === 5) {
+                    throw new Exception("Failed to generate a filename for image");
+                }
+            } while (file_exists(IMAGE_DIR . $newImagePath));
+
             $statement1 = $this->db->prepare("
                 UPDATE news 
-                SET news_title = :title, news_subtitle = :summary, body = :body, edited_date = CURRENT_TIMESTAMP
-                WHERE news_id = :newsId
+                SET 
+                    news_title = :title,
+                    news_subtitle = :summary,
+                    body = :body,
+                    edited_date = CURRENT_TIMESTAMP,
+                    image_path = :imagePath
+                    WHERE news_id = :newsId
             ");
             $statement1->execute([
                 "newsId" => $newsId,
                 "title" => $newsTitle,
                 "summary" => $newsSummary,
                 "body" => $newsBody,
+                "imagePath" => $newImagePath,
             ]);
 
             $statement2 = $this->db->prepare("DELETE FROM news_category WHERE news_id = :newsId");
@@ -269,27 +383,63 @@ class Model
                 $statement3->execute(["newsId" => $newsId, "categoryId" => $category]);
             }
 
-            if (!$this->db->commit()) {
-                throw new Exception("Transaction failed while editing {$_POST["news_id"]}");
+            if ($newImagePath && $getOldImagePath[1] !== $newImagePath) {
+                $uploadHasError = $this->uploadImage($newImagePath);
+                if ($uploadHasError) {
+                    throw new Exception("Failed to upload image: " . $uploadHasError);
+                }
+
+                $deleteHasError = $this->deleteImage($getOldImagePath[1], $newsId);
+                if ($deleteHasError) {
+                    throw new Exception("Failed to delete old image" . $deleteHasError);
+                }
             }
+
+            $this->db->commit();
+            return null;
         } catch (PDOException $err) {
-            error_log("Error updating news in DB: " . $err->getMessage());
-            header("HTTP/1.1 500 Internal Server Error");
-            echo "Sorry, something went wrong. News was not updated. Please try again later.";
-            exit();
+            $this->db->rollBack();
+            return "Transaction failed while editing {$newsId}: " . $err->getMessage();
         }
     }
 
-    public function deleteNewsFromDB(int $newsId): void
+    public function deleteNewsFromDB(int $newsId): ?string
     {
         try {
+            $this->db->beginTransaction();
+
+            $imagePath = $this->getImagePath($newsId);
+            if (!$imagePath[0]) {
+                throw new Exception("Failed to get image path: " . $imagePath[1]);
+            }
+
             $statement = $this->db->prepare("DELETE FROM news WHERE news_id = :newsId");
             $statement->execute(["newsId" => $newsId]);
+
+            $deleteImgStatus = $this->deleteImage($imagePath[1], $newsId);
+            if ($deleteImgStatus) {
+                throw new Exception("Failed to delete image: " . $deleteImgStatus);
+            }
+
+            $this->db->commit();
+            return null;
         } catch (PDOException $err) {
-            error_log("Error deleting news from DB: " . $err->getMessage());
-            header("HTTP/1.1 500 Internal Server Error");
-            echo "Sorry, something went wrong. News was not deleted. Please try again later.";
-            exit();
+            $this->db->rollBack();
+            return $err->getMessage();
+        }
+    }
+
+    public function getImagePath(int $id): array
+    {
+        try {
+            $statement = $this->db->prepare("
+                SELECT image_path FROM news WHERE news_id = :newsId
+            ");
+            $statement->execute(["newsId" => $id]);
+            $imagePath = $statement->fetch(PDO::FETCH_ASSOC)["image_path"];
+            return [true, $imagePath];
+        } catch (PDOException $err) {
+            return [false, $err->getMessage()];
         }
     }
 

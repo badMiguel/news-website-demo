@@ -29,7 +29,6 @@ class Application
         require_once VIEWS . "layout.php";
     }
 
-
     public function index(): void
     {
         /* i forgot why i added this but currently causing issue so commenting out 
@@ -158,7 +157,7 @@ class Application
             // session_write_close();
             header('Location: /login');
             exit;
-        }  
+        }
         session_write_close();
     }
 
@@ -210,35 +209,38 @@ class Application
             exit();
         }
 
-        try {
+        $newsTitle = $_POST["news_title"];
+        $newsSummary = $_POST["news_subtitle"];
+        $newsBody = $_POST["body"];
+        $categoryIdList = $_POST["category"];
 
-            $newsTitle = $_POST["news_title"];
-            $newsSummary = $_POST["news_subtitle"];
-            $newsBody = $_POST["body"];
-            $categoryIdList = $_POST["category"];
+        $addHasError = $this->model->addNewsToDB(
+            newsTitle: $newsTitle,
+            newsSummary: $newsSummary,
+            newsBody: $newsBody,
+            categoryIdList: $categoryIdList,
+        );
 
-            $this->model->addNewsToDB(
-                newsTitle: $newsTitle,
-                newsSummary: $newsSummary,
-                newsBody: $newsBody,
-                categoryIdList: $categoryIdList,
-            );
-
+        // success
+        if (!$addHasError) {
             session_start();
             $_SESSION["newsCreateStatus"] = true;
             session_write_close();
 
             header("Location: /news/create");
-            exit();
-        } catch (Exception $e) {
-            session_start();
-            $_SESSION["newsCreateStatus"] = false;
-            $_SESSION["newsCreateError"] = $e->getMessage();
-            session_write_close();
-
-            header("Location: /news/create");
-            exit();
+            exit;
         }
+
+        // fail
+        session_start();
+        $_SESSION["newsCreateStatus"] = false;
+        $_SESSION["newsCreateError"] = $addHasError;
+        session_write_close();
+
+        header("Location: /news/create");
+        error_log($addHasError);
+        echo "Sorry, something went wrong. News was not created. Please try again later.";
+        exit;
     }
 
     public function editNews(): void
@@ -281,20 +283,29 @@ class Application
         $newsBody = $_POST["body"];
         $categoryIdList = $_POST["category"];
 
-        $this->model->updateNewsInDB(
+        $updateHasError = $this->model->updateNewsInDB(
             newsId: $newsId,
             newsTitle: $newsTitle,
             newsSummary: $newsSummary,
             newsBody: $newsBody,
-            categoryIdList: $categoryIdList
+            categoryIdList: $categoryIdList,
         );
 
-        session_start();
-        $_SESSION["newsEditStatus"] = true;
-        session_write_close();
+        // success
+        if (!$updateHasError) {
+            session_start();
+            $_SESSION["newsEditStatus"] = true;
+            session_write_close();
 
-        header("Location: /news/edit?id=" . $_POST["news_id"]);
-        exit();
+            header("Location: /news/edit?id=" . $_POST["news_id"]);
+            exit;
+        }
+
+        // fail
+        error_log("Error updating news in DB: " . $updateHasError);
+        header("HTTP/1.1 500 Internal Server Error");
+        echo "Sorry, something went wrong. News was not updated. Please try again later.";
+        exit;
     }
 
     public function deleteNews(): void
@@ -302,10 +313,16 @@ class Application
         $this->checkPrivilege(EDITOR);
 
         $newsId = (int) $_GET["id"];
-        $this->model->deleteNewsFromDB($newsId);
+        $deleteStatus = $this->model->deleteNewsFromDB($newsId);
+        if ($deleteStatus) {
+            error_log("Error deleting news from DB: " . $deleteStatus);
+            header("HTTP/1.1 500 Internal Server Error");
+            echo "Sorry, something went wrong. News was not deleted. Please try again later.";
+            exit;
+        }
 
         header("Location: /");
-        exit();
+        exit;
     }
 
     public function addComment(): void

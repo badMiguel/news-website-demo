@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS news_category;
 CREATE TABLE user (
     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_name TEXT UNIQUE NOT NULL,
+    full_name TEXT NOT NULL,
     hashed_password TEXT NOT NULL,
     salt TEXT NOT NULL,
     privilege INTEGER DEFAULT 0,
@@ -21,6 +22,7 @@ CREATE TABLE news (
     author_id INTEGER NOT NULL,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     edited_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    image_path TEXT, 
     comments_enabled INTEGER DEFAULT 1,
     FOREIGN KEY(author_id) REFERENCES user(user_id) ON DELETE SET NULL
 );

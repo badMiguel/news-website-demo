@@ -6,17 +6,38 @@
             <div class="top-news--container">
                 <h3>Just In</h3>
                 <div class="top-news--card">
-                    <h1 class="top-news--title"><a href="/news?id=<?= htmlspecialchars($latestNews["news_id"]) ?>"><?= htmlspecialchars($latestNews["news_title"]) ?></a></h1>
-                    <div class="top-news--details">
+                    <?php if (
+                        htmlspecialchars($latestNews["image_path"]) &&
+                        file_exists(IMAGE_DIR . $latestNews["image_path"])
+                    ): ?>
+                        <a class="top-news--image-link" href="/news?id=<?= htmlspecialchars($latestNews["news_id"]) ?>">
+                            <img class="top-news--image" src="/../images/<?= htmlspecialchars($latestNews["image_path"]) ?>" />
+                        </a>
+                    <?php endif ?>
+                    <div class="top-news--details"
+                        <?php if (
+                            htmlspecialchars($latestNews["image_path"]) &&
+                            file_exists(IMAGE_DIR . $latestNews["image_path"])
+                        ): ?>
+                        style="width: 60%;"
+                        <?php else: ?>
+                        style="width: 100%;"
+                        <?php endif ?>>
+                        <h1 class="top-news--title">
+                            <a href="/news?id=<?= htmlspecialchars($latestNews["news_id"]) ?>">
+                                <?= htmlspecialchars($latestNews["news_title"]) ?>
+                            </a>
+                        </h1>
                         <p class="top-news--subtitle"><?= htmlspecialchars($latestNews["news_subtitle"]) ?></p>
-                        <div class="top-news--author-time">
-                            <p class="top-news--author">By: <?= htmlspecialchars($latestNews["author"]) ?></p>
+                        <p class="top-news--author-time">
                             <?php $news = $latestNews ?>
-                            <p class="top-news--time"><?php require VIEWS . "time_ago_display.php" ?></p>
-                        </div>
+                            <?php require VIEWS . "partials/time_ago_display.php" ?>
+                            <span style="margin: 0 0.3rem;">|</span>
+                            <?= htmlspecialchars($latestNews["author"]) ?>
+                        </p>
 
                         <?php $newsDetails = $latestNews ?>
-                        <?php require VIEWS . "category_display.php" ?>
+                        <?php require VIEWS . "partials/category_display.php" ?>
                     </div>
                 </div>
             </div>
@@ -34,30 +55,49 @@
             style="background-color: #dadce8;"
             <?php endif ?>>
             <div class="main--spacing">
+                <h1 class="category-title">
+                    <a href="/<?= htmlspecialchars(lcfirst($newsListKey)) ?>">
+                        <?= htmlspecialchars($newsListKey) ?>
+                    </a>
+                </h1>
                 <div class="news-category--card-container">
-                    <h1 class="category-title">
-                        <a href="/<?= htmlspecialchars(lcfirst($newsListKey)) ?>">
-                            <?= htmlspecialchars($newsListKey) ?>
-                        </a>
-                    </h1>
                     <?php foreach ($newsList as $news): ?>
                         <div class="news-category--card">
+                            <?php if (
+                                htmlspecialchars($news["image_path"]) &&
+                                file_exists(IMAGE_DIR . $news["image_path"])
+                            ): ?>
+                                <a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>">
+                                    <img style="width: 100%; max-height: 10rem; object-fit: cover; "
+                                        src="/../images/<?= htmlspecialchars($news["image_path"]) ?>" />
+                                </a>
+                            <?php endif ?>
                             <h2 class="home-news--title">
                                 <a href="/news?id=<?= htmlspecialchars($news["news_id"]) ?>">
                                     <?= htmlspecialchars($news["news_title"]) ?>
                                 </a>
                             </h2>
-                            <p class="home-news--subtitle"><?= htmlspecialchars($news["news_subtitle"]) ?></p>
-                            <p class="home-news--author">By: <?= htmlspecialchars($news["author"]) ?></p>
-                            <p class="home-news--time"><?php require VIEWS . "time_ago_display.php" ?></p>
+
+                            <?php if (
+                                !htmlspecialchars($news["image_path"]) ||
+                                !file_exists(IMAGE_DIR . $news["image_path"])
+                            ): ?>
+                                <p><?= htmlspecialchars($news["news_subtitle"]) ?></p>
+                            <?php endif ?>
+
+                            <p class="home-news--time-author">
+                                <?php require VIEWS . "partials/time_ago_display.php" ?>
+                                <span style="margin: 0 0.3rem;">|</span>
+                                <?= htmlspecialchars($news["author"]) ?>
+                            </p>
                         </div>
                     <?php endforeach; ?>
-                    <p class="home-news--view-more">
-                        <a href="/<?= htmlspecialchars(lcfirst($newsListKey)) ?>">
-                            View More
-                        </a>
-                    </p>
                 </div>
+                <p class="home-news--view-more">
+                    <a href="/<?= htmlspecialchars(lcfirst($newsListKey)) ?>">
+                        View More
+                    </a>
+                </p>
             </div>
         </div>
         <?php $counter++ ?>

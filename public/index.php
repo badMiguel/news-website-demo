@@ -5,6 +5,7 @@ declare(strict_types=1);
 define("CONTROLLER", __DIR__ . "/../lib/controller/");
 define("MODEL", __DIR__ . "/../lib/model/");
 define("VIEWS", __DIR__ . "/../lib/views/");
+define("IMAGE_DIR", __DIR__ . "/../public/images/");
 
 define("USER", 0);
 define("JOURNALIST", 1);

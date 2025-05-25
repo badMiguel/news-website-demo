@@ -1,11 +1,12 @@
-<h1>login page</h1>
+<h1>Login</h1>
 
-<h2>login HEHE</h2>
+<form class="login-form" method="POST" action="/login">
+    <label for="username">Username: </label>
+    <input type="text" name="username" placeholder="Username" required>
+    <label for="password">Password: </label>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+</form>
 <?php if (isset($error)): ?>
     <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
 <?php endif; ?>
-<form method="POST" action="/login">
-    <label>Username: <input type="text" name="username" required></label><br>
-    <label>Password: <input type="password" name="password" required></label><br>
-    <button type="submit">Login</button>
-</form>

@@ -7,15 +7,15 @@ function add_S(int $time): string
     return "";
 };
 
-if (!$newsDetails) {
+
+if (!isset($newsDetails["news_id"])) {
     echo "<p>Sorry news does not exist</p>";
     exit;
 }
 ?>
 
 <h1 class="news-title"><?php echo htmlspecialchars($newsDetails['news_title']); ?></h1>
-<p>By: <?php echo htmlspecialchars($newsDetails['author']); ?></p>
-<div class="created-edited-time">
+<p class="news-author-time">
     <?php
     $created = new DateTime($newsDetails["created_date"]);
     $edited = new DateTime($newsDetails["edited_date"]);
@@ -24,12 +24,11 @@ if (!$newsDetails) {
     $editedDiff = $edited->diff($now);
 
     $news = $newsDetails;
-    echo "<p>";
-    require VIEWS . "time_ago_display.php";
-    echo "</p>";
+    require VIEWS . "partials/time_ago_display.php";
 
     if ($created != $edited) {
-        echo "<p>Edited last ";
+        echo "<span style='margin: 0 0.3rem;'>|</span>";
+        echo "Edited last ";
         if ($editedDiff->y > 0) {
             echo htmlspecialchars($editedDiff->y . " year" . add_S($editedDiff->y) . " ago");
         } else if ($editedDiff->m > 0) {
@@ -43,16 +42,25 @@ if (!$newsDetails) {
         } else if ($editedDiff->s > 0) {
             echo htmlspecialchars($editedDiff->s . " second" . add_S($editedDiff->s) . " ago");
         }
-        echo "</p>";
     }
-
     ?>
-</div>
+
+    <span style='margin: 0 0.3rem;'>|</span>
+    <?php echo htmlspecialchars($newsDetails['author']); ?>
+<p>
 
 <p class="news-subtitle"><?php echo htmlspecialchars($newsDetails['news_subtitle']); ?></p>
+
+<?php if (
+    htmlspecialchars($newsDetails["image_path"]) &&
+    file_exists(IMAGE_DIR . $newsDetails["image_path"])
+): ?>
+    <img class="news-image" src="/../images/<?= htmlspecialchars($newsDetails["image_path"]) ?>" />
+<?php endif ?>
+
 <p class="body"><?php echo nl2br(htmlspecialchars($newsDetails['body'])); ?></p>
 
-<?php require VIEWS . "category_display.php" ?>
+<?php require VIEWS . "partials/category_display.php" ?>
 
 <?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] >= EDITOR): ?>
     <div class="edit-delete--container">
