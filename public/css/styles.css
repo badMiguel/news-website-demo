@@ -1,17 +1,20 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 :root {
-    font-size: 18px;
-    --bg-primary: #f4f4f7;
-    --color-1: #ebecf3;
-    --color-2: #dadce8;
-    --color-3: #9ca5cd;
-    --color-4: #6f7aa7;
-    --color-5: #7080c3;
-    --font-primary: #070708;
+    font-size: px;
+    --bg-primary: #f4f4f7; 
+    --color-1: #ebecf3; 
+    --color-2: #dadce8; 
+    --color-3: #9ca5cd; 
+    --color-4: #6f7aa7; 
+    --color-5: #6074c7; 
+    --font-primary: #070708; 
+    --font-secondary: #4a4a4a; 
+    --accent-color: #47719d; 
     text-align: justify;
 }
 
@@ -19,19 +22,21 @@ body {
     font-family: "Merriweather", Georgia, Cambria, "Times New Roman", Times, serif;
     background-color: var(--bg-primary);
     color: var(--font-primary);
+    line-height: 2.0; 
 }
 
-h1,
-h2,
-h3,
-nav,
-.login--container {
+h1, h2, h3, nav, .login--container {
     font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 a {
     text-decoration: none;
-    color: var(--font-primary);
+    color: var(--accent-color);
+    transition: color 1.0s ease; 
+}
+
+a:hover {
+    color: var(--color-5); 
 }
 
 .website-title {
@@ -66,6 +71,19 @@ a {
     list-style-type: none;
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.nav--list li {
+    margin: 0.5rem 0;
+}
+
+.login--container {
+    display: flex;
+    gap: 1rem;
+    flex: 2;
+    justify-content: flex-end;
+    padding: 0 1rem; 
 }
 
 .main--container {
@@ -200,4 +218,55 @@ a {
 
 .home-news--view-more {
     text-align: center;
+}
+
+@media (max-width: 768px) {
+    .top--container {
+        flex-direction: column; 
+        padding: 1rem;
+    }
+
+    .website-title {
+        flex: none;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .login--container {
+        flex: none;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nav--list {
+        flex-direction: column; 
+        align-items: center;
+    }
+
+    .main--spacing {
+        width: 90%; 
+    }
+
+    .top-news--card {
+        flex-direction: column; 
+        gap: 1rem;
+    }
+
+    .top-news--title, .top-news--details {
+        width: 100%; 
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        font-size: 16px; 
+    }
+
+    .nav--list li {
+        margin: 0.5rem 0;
+    }
+
+    .main--spacing {
+        width: 95%;
+    }
 }
