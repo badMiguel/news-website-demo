@@ -1,4 +1,4 @@
-<h1>this is create news page</h1>
+<h1>Create News</h1>
 
 <?php
 session_start();
@@ -11,29 +11,54 @@ unset($_SESSION["newsCreateStatus"]);
 session_write_close();
 ?>
 
-<form action="/news/create/submit" method="POST" enctype="multipart/form-data">
-    <label for="news_title">News Title:</label>
-    <input type="text" name="news_title" id="news_title" />
+<form class="crud-form" action="/news/create/submit" method="POST" enctype="multipart/form-data">
+    <div class="crud-form--field">
+        <label class="crud-form--label" for="news_title">Title</label>
+        <input
+            class="crud-form--input"
+            type="text"
+            name="news_title"
+            id="news_title"
+            placeholder="Enter news title" />
+    </div>
 
-    <label for="news_subtitle">News Subtitle:</label>
-    <input type="text" name="news_subtitle" id="news_subtitle" />
+    <div class="crud-form--field">
+        <label class="crud-form--label" for="news_subtitle">Subtitle</label>
+        <input
+            class="crud-form--input"
+            type="text"
+            name="news_subtitle"
+            id="news_subtitle"
+            placeholder="Enter news subtitle" />
 
-    <label for="body">News Body:</label>
-    <textarea name="body" id="body"></textarea>
+    </div>
 
-    <label for="image">Select Image:</label>
-    <input type="file" name="image" accept="image/*" />
+    <div class="crud-form--field">
+        <label class="crud-form--label" for="body">Body</label>
+        <textarea name="body" cols="40" rows="20" class="crud-form--input" placeholder="Enter news body" ></textarea>
+    </div>
 
-    <p>Category:</p>
-    <?php foreach ($categoryList as $c): ?>
-        <label>
-            <input
-                type="checkbox"
-                name="category[]"
-                value="<?= htmlspecialchars(lcfirst($c["category_id"])) ?>" />
-            <?= $c["category"] ?>
-        </label>
-    <?php endforeach ?>
+    <div class="crud-form--field">
+        <p class="crud-form--label">Category</p>
+        <div class="crud-form--category-list">
+            <?php foreach ($categoryList as $c): ?>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="category[]"
+                        value="<?= htmlspecialchars(lcfirst($c["category_id"])) ?>" />
+                    <?= $c["category"] ?>
+                </label>
+            <?php endforeach ?>
+        </div>
+    </div>
 
-    <button type="submit">Submit</button>
+    <div class="crud-form--field">
+        <label class="crud-form--label" for="image">Image</label>
+        <input class="crud-form--input" type="file" name="image" accept="image/*" />
+    </div>
+
+    <div class="crud-form--submit--container">
+        <button class="crud-form--submit" type="submit">Create News</button>
+    </div>
 </form>
