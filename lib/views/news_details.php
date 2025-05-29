@@ -79,13 +79,13 @@ if (!isset($newsDetails["news_id"])) {
 
         <?php if ($newsDetails['comments_enabled']): ?>
             <p>
-                <a href="/news/comments/disable?id=<?= htmlspecialchars($newsDetails['news_id']) ?>&csrf_token=<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <a href="/news/comments/disable?id=<?= htmlspecialchars($newsDetails['news_id']) ?>">
                     Disable Comments
                 </a>
             </p>
         <?php else: ?>
             <p>
-                <a href="/news/comments/enable?id=<?= htmlspecialchars($newsDetails['news_id']) ?>&csrf_token=<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <a href="/news/comments/enable?id=<?= htmlspecialchars($newsDetails['news_id']) ?>">
                     Enable Comments
                 </a>
             </p>
@@ -100,7 +100,7 @@ if (!isset($newsDetails["news_id"])) {
 <?php else: ?>
     <div class="comments">
         <?php
-        function displayComments($comments, $level = 0, $newsId, $commentsEnabled)
+        function displayComments($comments, $level = 0, $newsId, $commentsEnabled, $csrfToken, $csrfName)
         {
             foreach ($comments as $comment):
         ?>
@@ -112,8 +112,16 @@ if (!isset($newsDetails["news_id"])) {
                         <!-- delete and edit -->
                         <?php if (isset($_SESSION['user_id']) && ($_SESSION['user_id'] == $comment['commentor'] || $_SESSION['privilege'] >= EDITOR)): ?>
                             <span>
-                                <a href="/news/comment/delete?id=<?= htmlspecialchars($comment['comment_id']) ?>&news_id=<?= htmlspecialchars($newsId) ?>&csrf_token=<?= htmlspecialchars($_SESSION['csrf_token']) ?>" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</a>
-                                | <a href="#" onclick="document.getElementById('edit-form-<?= $comment['comment_id'] ?>').style.display='block'; return false;">Edit</a>
+                                <a
+                                    href="/news/comment/delete?id=<?= htmlspecialchars($comment['comment_id']) ?>&news_id=<?= htmlspecialchars($newsId) ?>"
+                                    onclick="return confirm('Are you sure you want to delete this comment?')">
+                                    Delete
+                                </a>
+                                |
+                                <a
+                                    href="#" onclick="document.getElementById('edit-form-<?= $comment['comment_id'] ?>').style.display='block'; return false;">
+                                    Edit
+                                </a>
                             </span>
                         <?php endif; ?>
                     </p>
@@ -124,7 +132,10 @@ if (!isset($newsDetails["news_id"])) {
                         <form id="edit-form-<?= $comment['comment_id'] ?>" action="/news/comment/edit" method="POST" style="display: none; margin-top: 5px;">
                             <input type="hidden" name="comment_id" value="<?= htmlspecialchars($comment['comment_id']) ?>">
                             <input type="hidden" name="news_id" value="<?= htmlspecialchars($newsId) ?>">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+
+                            <input type="hidden" name="csrf_name" value="<?= htmlspecialchars($csrfName) ?>">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+
                             <textarea name="new_comment" required style="width: 100%; height: 50px;"><?= htmlspecialchars($comment['comment']) ?></textarea>
                             <button type="submit">Update Comment</button>
                         </form>
@@ -134,21 +145,25 @@ if (!isset($newsDetails["news_id"])) {
                         <form action="/news/comment/add" method="POST" style="margin-top: 5px;">
                             <input type="hidden" name="news_id" value="<?= htmlspecialchars($newsId) ?>">
                             <input type="hidden" name="parent_comment_id" value="<?= htmlspecialchars($comment['comment_id']) ?>">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+
+                            <input type="hidden" name="csrf_name" value="<?= htmlspecialchars($csrfName) ?>">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+
                             <textarea name="comment" placeholder="Reply to this comment..." required style="width: 100%; height: 50px;"></textarea>
                             <button type="submit">Reply</button>
                         </form>
                     <?php endif; ?>
 
                     <?php if (!empty($comment['replies'])): ?>
-                        <?php displayComments($comment['replies'], $level + 1, $newsId, $commentsEnabled); ?>
+                        <?php displayComments($comment['replies'], $level + 1, $newsId, $commentsEnabled, $csrfToken, $csrfName); ?>
                     <?php endif; ?>
 
                 </div>
         <?php
             endforeach;
         }
-        displayComments($newsDetails['comments'], 0, $newsDetails['news_id'], $newsDetails['comments_enabled']);
+
+        displayComments($newsDetails['comments'], 0, $newsDetails['news_id'], $newsDetails['comments_enabled'], $csrfToken, $csrfName);
         ?>
     </div>
 <?php endif; ?>
@@ -157,8 +172,11 @@ if (!isset($newsDetails["news_id"])) {
     <?php if (isset($_SESSION['user_id'])): ?>
         <h4>Add a Comment</h4>
         <form method="POST" action="/news/comment/add">
+            <input type="hidden" name="csrf_name" value="<?= htmlspecialchars($csrfName) ?>" />
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>" />
+
             <input type="hidden" name="news_id" value="<?php echo htmlspecialchars($newsDetails['news_id']); ?>">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
             <label>Comment: <textarea name="comment" required style="width: 100%; height: 100px;"></textarea></label><br>
             <button type="submit">Add Comment</button>
         </form>

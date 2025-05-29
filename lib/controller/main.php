@@ -93,12 +93,19 @@ class Application
         $newsDetails = $this->model->getNewsDetails((int) $_GET["id"]);
         $newsDetails[0]['comments'] = $newsDetails['comments'];
 
+        $csrfName = "newsDetails";
+
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
+
+        $csrfToken = $this->csrf->generateCSRF($csrfName);
+
         $data = [
             "title" => $newsDetails[0]["news_title"],
             "newsDetails" => $newsDetails[0],
+            "csrfName" => $csrfName,
+            "csrfToken" => $csrfToken,
         ];
 
         $this->render("news_details", $data);
@@ -114,6 +121,7 @@ class Application
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $csrfToken = $this->csrf->generateCSRF($csrfName);
+
             $data = [
                 "csrfName" => $csrfName,
                 "csrfToken" => $csrfToken,
@@ -128,7 +136,9 @@ class Application
 
         if ($username === null || $password === null) {
             $error = "Username and password are required.";
+
             $csrfToken = $this->csrf->generateCSRF($csrfName);
+
             $data = [
                 "csrfName" => $csrfName,
                 "csrfToken" => $csrfToken,
@@ -422,8 +432,16 @@ class Application
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            if (!isset($_POST["csrf_name"], $_POST["csrf_token"])) {
                 session_write_close();
+                header("Location: /news?id=" . (int)$_POST['news_id']);
+                exit;
+            }
+
+            $csrfName = $_POST["csrf_name"];
+            $csrfToken = $_POST["csrf_token"];
+
+            if (!$this->csrf->verifyCSRF(name: $csrfName, clientToken: $csrfToken)) {
                 header("Location: /news?id=" . (int)$_POST['news_id']);
                 exit;
             }
@@ -468,11 +486,6 @@ class Application
     public function enableComments(): void
     {
         $this->checkPrivilege(EDITOR);
-        if (!isset($_GET['csrf_token']) || $_GET['csrf_token'] !== $_SESSION['csrf_token']) {
-            header('Location: /admin');
-            exit;
-        }
-
         $newsId = (int)($_GET['id'] ?? 0);
         if ($newsId > 0) {
             $this->model->toggleComments($newsId, true);
@@ -484,11 +497,6 @@ class Application
     public function disableComments(): void
     {
         $this->checkPrivilege(EDITOR);
-        if (!isset($_GET['csrf_token']) || $_GET['csrf_token'] !== $_SESSION['csrf_token']) {
-            header('Location: /admin');
-            exit;
-        }
-
         $newsId = (int)($_GET['id'] ?? 0);
         if ($newsId > 0) {
             $this->model->toggleComments($newsId, false);
@@ -500,6 +508,10 @@ class Application
     // delete
     public function deleteComment(): void
     {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
@@ -507,12 +519,6 @@ class Application
 
         $commentId = (int)($_GET['id'] ?? 0);
         $newsId = (int)($_GET['news_id'] ?? 0);
-
-        // CSRF 
-        if (!isset($_GET['csrf_token']) || $_GET['csrf_token'] !== $_SESSION['csrf_token']) {
-            header("Location: /news?id=" . $newsId);
-            exit;
-        }
 
         $commentorId = $this->model->getCommentorId($commentId);
 
@@ -534,6 +540,10 @@ class Application
     // edit
     public function editComment(): void
     {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
@@ -544,7 +554,15 @@ class Application
         $newComment = filter_input(INPUT_POST, 'new_comment', FILTER_SANITIZE_STRING);
 
 
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if (!isset($_POST["csrf_name"], $_POST["csrf_token"])) {
+            header("Location: /news?id=" . $newsId);
+            exit;
+        }
+
+        $csrfName = $_POST["csrf_name"];
+        $csrfToken = $_POST["csrf_token"];
+
+        if (!$this->csrf->verifyCSRF(name: $csrfName, clientToken: $csrfToken)) {
             header("Location: /news?id=" . $newsId);
             exit;
         }
