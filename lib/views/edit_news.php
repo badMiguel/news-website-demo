@@ -13,6 +13,8 @@ session_write_close();
 ?>
 
 <form class="crud-form" method="POST" action="/news/edit/submit" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_name" value="<?= htmlspecialchars($csrfName) ?>" />
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>" />
     <input type="hidden" name="news_id" value="<?php echo htmlspecialchars($newsDetails[0]['news_id']); ?>">
 
     <div class="crud-form--field">
@@ -57,6 +59,6 @@ session_write_close();
     <!-- <?php endif ?> -->
 
     <div class="crud-form--submit--container">
-    <button class="crud-form--submit" type="submit">Update News</button>
+        <button class="crud-form--submit" type="submit">Update News</button>
     </div>
 </form>

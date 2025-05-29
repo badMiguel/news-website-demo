@@ -304,10 +304,15 @@ class Application
         $newsDetails = $this->model->getNewsDetails((int) $_GET["id"]);
         $categoryList = $this->model->getCategoryList();
 
+        $csrfName = "editNews";
+        $csrfToken = $this->csrf->generateCSRF($csrfName);
+
         $data = [
             "title" => "Edit News",
             "newsDetails" => $newsDetails,
             "categoryList" => $categoryList,
+            "csrfName" => $csrfName,
+            "csrfToken" => $csrfToken,
         ];
         $this->render("edit_news", $data);
     }
@@ -315,6 +320,27 @@ class Application
     public function editNewsSubmit(): void
     {
         $this->checkPrivilege(EDITOR);
+
+        if (!isset($_POST["csrf_name"], $_POST["csrf_token"])) {
+            session_start();
+            $_SESSION["newsEditStatus"] = false;
+            session_write_close();
+
+            header("Location: /news/edit?id=" . $_POST["news_id"]);
+            exit;
+        }
+
+        $csrfName = $_POST["csrf_name"];
+        $csrfToken = $_POST["csrf_token"];
+
+        if (!$this->csrf->verifyCSRF(name: $csrfName, clientToken: $csrfToken)) {
+            session_start();
+            $_SESSION["newsEditStatus"] = false;
+            session_write_close();
+
+            header("Location: /news/edit?id=" . $_POST["news_id"]);
+            exit;
+        }
 
         if (
             !isset($_POST["news_id"]) || $_POST["news_id"] === "" ||
