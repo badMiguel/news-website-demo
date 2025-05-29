@@ -342,14 +342,16 @@ class Model
             }
 
             $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-            $counter = 0;
-            do {
-                $newImagePath = bin2hex(random_bytes(16)) . "." . $imageFileType;
-                $counter++;
-                if ($counter === 5) {
-                    throw new Exception("Failed to generate a filename for image");
-                }
-            } while (file_exists(IMAGE_DIR . $newImagePath));
+            if ($imageFileType !== "") {
+                $counter = 0;
+                do {
+                    $newImagePath = bin2hex(random_bytes(16)) . "." . $imageFileType;
+                    $counter++;
+                    if ($counter === 5) {
+                        throw new Exception("Failed to generate a filename for image");
+                    }
+                } while (file_exists(IMAGE_DIR . $newImagePath));
+            }
 
             $statement1 = $this->db->prepare("
                 UPDATE news 
@@ -412,9 +414,12 @@ class Model
             $statement = $this->db->prepare("DELETE FROM news WHERE news_id = :newsId");
             $statement->execute(["newsId" => $newsId]);
 
-            $deleteImgStatus = $this->deleteImage($imagePath[1], $newsId);
-            if ($deleteImgStatus) {
-                throw new Exception("Failed to delete image: " . $deleteImgStatus);
+
+            if ($imagePath[1]) {
+                $deleteImgStatus = $this->deleteImage($imagePath[1], $newsId);
+                if ($deleteImgStatus) {
+                    throw new Exception("Failed to delete image: " . $deleteImgStatus);
+                }
             }
 
             $this->db->commit();
