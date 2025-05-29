@@ -103,36 +103,86 @@ class Application
 
     public function login(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $csrfName = "login";
 
-            $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $csrfToken = $this->csrf->generateCSRF($csrfName);
+            $data = [
+                "csrfName" => $csrfName,
+                "csrfToken" => $csrfToken,
+            ];
 
+            $this->render("login", $data);
+            exit;
+        }
 
-            if ($username === null || $password === null) {
-                $error = "Username and password are required.";
-                $this->render("login", ['error' => $error]);
-                return;
-            }
+        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
 
-            $user = $this->model->getUserByUsername($username);
-            if ($user && password_verify($password . $user['salt'], $user['hashed_password'])) {
-                // login
-                session_start();
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['username'] = $user['user_name'];
-                $_SESSION['privilege'] = $user['privilege'];
-                session_write_close();
+        if ($username === null || $password === null) {
+            $error = "Username and password are required.";
+            $csrfToken = $this->csrf->generateCSRF($csrfName);
+            $data = [
+                "csrfName" => $csrfName,
+                "csrfToken" => $csrfToken,
+                "error" => $error,
+            ];
 
-                header('Location: /');
-                exit;
-            } else {
-                // fail login
-                $error = "Invalid username or password";
-                $this->render("login", ['error' => $error]);
-            }
+            $this->render("login", $data);
+            exit;
+        }
+
+        $user = $this->model->getUserByUsername($username);
+
+        if (!isset($_POST["csrf_name"], $_POST["csrf_token"])) {
+            $error = "No CSRF token found.";
+            $csrfToken = $this->csrf->generateCSRF($csrfName);
+            $data = [
+                "csrfName" => $csrfName,
+                "csrfToken" => $csrfToken,
+                "error" => $error,
+            ];
+
+            $this->render("login", $data);
+            exit;
+        }
+
+        $clientCsrfName = $_POST["csrf_name"];
+        $clientCsrfToken = $_POST["csrf_token"];
+
+        if (!$this->csrf->verifyCSRF(name: $clientCsrfName, clientToken: $clientCsrfToken)) {
+            $error = "Invalid CSRF token.";
+            $csrfToken = $this->csrf->generateCSRF($csrfName);
+            $data = [
+                "csrfName" => $csrfName,
+                "csrfToken" => $csrfToken,
+                "error" => $error,
+            ];
+
+            $this->render("login", $data);
+            exit;
+        }
+
+        if ($user && password_verify($password . $user['salt'], $user['hashed_password'])) {
+            // login
+            session_start();
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['username'] = $user['user_name'];
+            $_SESSION['privilege'] = $user['privilege'];
+            session_write_close();
+
+            header('Location: /');
+            exit;
         } else {
-            $this->render("login", []);
+            // fail login
+            $error = "Invalid username or password";
+            $csrfToken = $this->csrf->generateCSRF($csrfName);
+            $data = [
+                "csrfName" => $csrfName,
+                "csrfToken" => $csrfToken,
+                "error" => $error,
+            ];
+            $this->render("login", $data);
         }
     }
 
@@ -163,11 +213,6 @@ class Application
         $csrfName = "createNews";
         $csrfToken = $this->csrf->generateCSRF($csrfName);
 
-        session_start();
-        $csrfData = $_SESSION["csrf_{$csrfName}"];
-        error_log("begin:" . $csrfData["token"] . " - " . $csrfData["time"] . "\n\n");
-        session_write_close();
-
         $data = [
             "title" => "Create News",
             "categoryList" => $categoryList,
@@ -193,8 +238,6 @@ class Application
 
         $csrfName = $_POST["csrf_name"];
         $csrfToken = $_POST["csrf_token"];
-
-        error_log('token on submit: ' . $csrfToken);
 
         if (!$this->csrf->verifyCSRF(name: $csrfName, clientToken: $csrfToken)) {
             session_start();
