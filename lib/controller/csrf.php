@@ -4,30 +4,42 @@ class CSRF
 {
     public function generateCSRF(string $name): string
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
         $csrfToken = bin2hex(random_bytes(32));
-        $_SESSION["csrf_" . $name] = $csrfToken;
+
+        session_start();
+        $_SESSION["csrf_{$name}"] = [
+            "token" => $csrfToken,
+            "time" => time(),
+        ];
+        session_write_close();
+
         return $csrfToken;
     }
 
     public function verifyCSRF(string $name, string $clientToken): bool
     {
+        $key = "csrf_{$name}";
+
         session_start();
-        if (!isset($_SESSION["csrf_" . $name])) {
+        if (!isset($_SESSION[$key])) {
+            unset($_SESSION[$key]);
             return false;
         }
 
-        $sessionToken = $_SESSION["csrf_" . $name];
-        unset($_SESSION["csrf_" . $name]);
+        $data = $_SESSION[$key];
+        unset($_SESSION[$key]);
         session_write_close();
 
-        // hash_equals for safer string comparison
-        if (!hash_equals($sessionToken, $clientToken)) {
+        $tokenExpiration = 900;
+        if (isset($data["time"]) && (time() - $data["time"] > $tokenExpiration)) {
             return false;
         }
+
+        // hash_equals for safer string comparison
+        if (!hash_equals($data["token"], $clientToken)) {
+            return false;
+        }
+
         return true;
     }
 }

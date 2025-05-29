@@ -275,6 +275,7 @@ class Model
             $this->db->beginTransaction();
 
             $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+            $newImagePath = null;
             if ($imageFileType !== "") {
                 $counter = 0;
                 do {

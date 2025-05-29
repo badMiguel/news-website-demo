@@ -33,13 +33,6 @@ class Application
 
     public function index(): void
     {
-        /* i forgot why i added this but currently causing issue so commenting out 
-         *
-         * session_start();
-         * $this->paginator->currentPage = isset($_SESSION["currentPage"]) ? $_SESSION["currentPage"] : 1;
-         * session_write_close();
-         */
-
         $latestNews = $this->model->getLatestNews();
         $recentNewsPerCategory = [
             "World" => $this->model->getNewsListByCategory(0, 3, "World"),
@@ -131,7 +124,6 @@ class Application
                 $_SESSION['privilege'] = $user['privilege'];
                 session_write_close();
 
-
                 header('Location: /');
                 exit;
             } else {
@@ -168,9 +160,19 @@ class Application
         $this->checkPrivilege(JOURNALIST);
         $categoryList = $this->model->getCategoryList();
 
+        $csrfName = "createNews";
+        $csrfToken = $this->csrf->generateCSRF($csrfName);
+
+        session_start();
+        $csrfData = $_SESSION["csrf_{$csrfName}"];
+        error_log("begin:" . $csrfData["token"] . " - " . $csrfData["time"] . "\n\n");
+        session_write_close();
+
         $data = [
             "title" => "Create News",
-            "categoryList" => $categoryList
+            "categoryList" => $categoryList,
+            "csrfToken" => $csrfToken,
+            "csrfName" => $csrfName,
         ];
         $this->render("create_news", $data);
     }
@@ -179,23 +181,30 @@ class Application
     {
         $this->checkPrivilege(JOURNALIST);
 
-        /**
-         * TODO 
-         * - need to implement the csrf on the forms too
-         *
-         * if (
-         *     !isset($_POST["csrf_token"], $_SESSION["csrf_token"]) ||
-         *     $_POST["csrf_token"] !== $_SESSION["csrf_token"]
-         * ) {
-         *     session_start();
-         *     $_SESSION["newsCreateStatus"] = false;
-         *     $_SESSION["newsCreateError"] = "Invalid CSRF token.";
-         *     session_write_close();
-         * 
-         *     header("Location: /news/create");
-         *     exit();
-         * }
-         */
+        if (!isset($_POST["csrf_name"], $_POST["csrf_token"])) {
+            session_start();
+            $_SESSION["newsCreateStatus"] = false;
+            $_SESSION["newsCreateError"] = "No CSRF token found.";
+            session_write_close();
+
+            header("Location: /news/create");
+            exit();
+        }
+
+        $csrfName = $_POST["csrf_name"];
+        $csrfToken = $_POST["csrf_token"];
+
+        error_log('token on submit: ' . $csrfToken);
+
+        if (!$this->csrf->verifyCSRF(name: $csrfName, clientToken: $csrfToken)) {
+            session_start();
+            $_SESSION["newsCreateStatus"] = false;
+            $_SESSION["newsCreateError"] = "Invalid CSRF token.";
+            session_write_close();
+
+            header("Location: /news/create");
+            exit();
+        }
 
         if (
             !isset($_POST["news_title"]) || $_POST["news_title"] === "" ||

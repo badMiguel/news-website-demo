@@ -19,6 +19,7 @@ if (isset($_SERVER["PATH_INFO"])) {
 require_once CONTROLLER . "router.php";
 require_once CONTROLLER . "main.php";
 require_once CONTROLLER . "paginator.php";
+require_once CONTROLLER . "csrf.php";
 require_once MODEL . "db.php";
 
 $model = new Model();

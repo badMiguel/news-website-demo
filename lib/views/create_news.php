@@ -12,6 +12,9 @@ session_write_close();
 ?>
 
 <form class="crud-form" action="/news/create/submit" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_name" value="<?= htmlspecialchars($csrfName) ?>" />
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>" />
+
     <div class="crud-form--field">
         <label class="crud-form--label" for="news_title">Title</label>
         <input
@@ -35,7 +38,7 @@ session_write_close();
 
     <div class="crud-form--field">
         <label class="crud-form--label" for="body">Body</label>
-        <textarea name="body" cols="40" rows="20" class="crud-form--input" placeholder="Enter news body" ></textarea>
+        <textarea name="body" cols="40" rows="20" class="crud-form--input" placeholder="Enter news body"></textarea>
     </div>
 
     <div class="crud-form--field">

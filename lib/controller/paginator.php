@@ -82,13 +82,6 @@ class Paginator
 
     public function skipToPage(int $currentPage, ?string $category): array
     {
-        /* i forgot why i added this but currently causing issue so commenting out 
-         *
-         * session_start();
-         * $_SESSION["currentPage"] = $currentPage;
-         * session_write_close();
-         */
-
         $this->currentPage = $currentPage;
 
         $currIdx = ($this->currentPage - 1) * $this->amountToDisplay;
