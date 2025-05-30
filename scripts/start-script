@@ -14,6 +14,7 @@ tmux send-keys -t news-website:0 'vim .' C-m
 
 tmux new-window -t news-website:1 -n Server
 tmux send-keys -t news-website:1 'php -S 127.0.0.1:8080 -t public/' C-m
+brave 127.0.0.1:8080
 
 tmux new-window -t news-website:2 -n DB
 tmux send-keys -t news-website:2 'cd lib/model && sqlite3 db.sqlite' C-m
