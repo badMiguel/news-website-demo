@@ -44,7 +44,7 @@ class Application
         ];
 
         $data = [
-            "latestNews" => $latestNews[0],
+            "latestNews" => $latestNews ? $latestNews[0] : null,
             "recentNewsPerCategory" => $recentNewsPerCategory,
             "isHome" => true,
         ];

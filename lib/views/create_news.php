@@ -2,9 +2,9 @@
 
 <?php
 if (isset($_SESSION["newsCreateStatus"]) && $_SESSION["newsCreateStatus"] === false) {
-    echo "<p><strong>Error submitting news</strong></p>";
+    echo "<p style='color: red;'><strong>Error submitting news</strong></p>";
 } else if (isset($_SESSION["newsCreateStatus"]) && $_SESSION["newsCreateStatus"] === true) {
-    echo "<p><strong>Successfully Submitted</strong></p>";
+    echo "<p style='color: green;'><strong>Successfully Submitted</strong></p>";
 }
 unset($_SESSION["newsCreateStatus"]);
 ?>

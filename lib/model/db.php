@@ -268,9 +268,7 @@ class Model
         array $categoryIdList,
     ): ?string {
         try {
-            session_start();
             $authorId = $_SESSION['user_id'];
-            session_write_close();
 
             $this->db->beginTransaction();
 
