@@ -1,3 +1,9 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,10 +25,6 @@
             <h1 class="website-title"><a href="/">Austro-Asian Times</a></h1>
             <div class="login--container">
                 <?php
-                if (session_status() !== PHP_SESSION_ACTIVE) {
-                    session_start();
-                }
-
                 if (isset($_SESSION['username'])) {
                     if ($_SESSION['privilege'] === EDITOR) {
                         echo "<p><a href='/admin'>Admin</a></p>";
