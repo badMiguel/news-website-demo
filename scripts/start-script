@@ -1,25 +1,23 @@
 #!/usr/bin/env bash
 
-# for miguelaaaa
-
-cd $HOME/documents/code/news-website
+cd $HOME/documents/code/news-website-demo
 
 tmux_running=$(pgrep tmux)
 
-if [[ -z tmux_running ]] || !(tmux has-session -t "news-website" 2> /dev/null); then
-    tmux new-session -d -s news-website -n Vim
+if [[ -z tmux_running ]] || !(tmux has-session -t "news-website-demo" 2> /dev/null); then
+    tmux new-session -d -s news-website-demo -n Vim
 fi
 
-tmux send-keys -t news-website:0 'vim .' C-m
+tmux send-keys -t news-website-demo:0 'vim .' C-m
 
-tmux new-window -t news-website:1 -n Server
-tmux send-keys -t news-website:1 'php -S 127.0.0.1:8080 -t public/' C-m
+tmux new-window -t news-website-demo:1 -n Server
+tmux send-keys -t news-website-demo:1 'php -S 127.0.0.1:8080 -t public/' C-m
 brave 127.0.0.1:8080
 
-tmux new-window -t news-website:2 -n DB
-tmux send-keys -t news-website:2 'cd lib/model && sqlite3 db.sqlite' C-m
+tmux new-window -t news-website-demo:2 -n DB
+tmux send-keys -t news-website-demo:2 'cd lib/model && sqlite3 db.sqlite' C-m
 
-tmux new-window -t news-website:3 -n Terminal
+tmux new-window -t news-website-demo:3 -n Terminal
 
-tmux select-window -t news-website:0
-tmux attach-session -t news-website
+tmux select-window -t news-website-demo:0
+tmux attach-session -t news-website-demo
