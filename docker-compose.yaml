@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  php:
+    build: .
+    container_name: php-fpm
+    volumes:
+      - .:/var/www/html
+      - ./lib/model/db.sqlite:/var/www/html/lib/model/db.sqlite
+      - ./public/images:/var/www/html/public/images
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:9000"
