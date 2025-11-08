@@ -71,7 +71,7 @@ a:hover {
 .nav--alignment {
     width: 80%;
     max-width: 50rem;
-    justify-self: center;
+    margin: auto;
     justify-items: space-between;
 }
 
