@@ -7,7 +7,6 @@ services:
     volumes:
       - .:/var/www/html
       - ./lib/model/db.sqlite:/var/www/html/lib/model/db.sqlite
-      - ./public/images:/var/www/html/public/images
     env_file:
       - .env
     ports:

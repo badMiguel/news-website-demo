@@ -12,9 +12,6 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 COPY . /var/www/html/
 
-RUN sqlite3 lib/model/db.sqlite < lib/model/create.sql
-RUN sqlite3 lib/model/db.sqlite < lib/model/load.sql
-
 EXPOSE 9000
 
 CMD [ "php-fpm" ]
