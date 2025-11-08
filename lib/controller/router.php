@@ -33,28 +33,25 @@ class Router
             "/sports"               => [$this->app, "newsByCategory"],
 
             "/news"                 => [$this->app, "news"],
-            "/news/create"          => [$this->app, "createNews"],
-            "/news/create/submit"   => [$this->app, "createNewsSubmit"],
-            "/news/edit"            => [$this->app, "editNews"],
-            "/news/edit/submit"     => [$this->app, "editNewsSubmit"],
-            "/news/delete"          => [$this->app, "deleteNews"],
-            "/news/comment/add"     => [$this->app, "addComment"],
-
-            "/login"                => [$this->app, "login"],
-            "/logout"               => [$this->app, "logout"],
-
-            "/admin"                => [$this->app, "admin"],
-
-            "/news/comments/enable" => [$this->app, "enableComments"],
-            "/news/comments/disable" => [$this->app, "disableComments"],
-
-            "/news/comment/delete"  => [$this->app, "deleteComment"],
-            "/news/comment/edit"    => [$this->app, "editComment"],
-
-            "/login"                => [$this->app, "login"],
-            "/logout"               => [$this->app, "logout"],
-
-            "/admin"                => [$this->app, "admin"],
+            // "/news/create"          => [$this->app, "createNews"],
+            // "/news/create/submit"   => [$this->app, "createNewsSubmit"],
+            // "/news/edit"            => [$this->app, "editNews"],
+            // "/news/edit/submit"     => [$this->app, "editNewsSubmit"],
+            // "/news/delete"          => [$this->app, "deleteNews"],
+            // "/news/comment/add"     => [$this->app, "addComment"],
+            //
+            // "/login"                => [$this->app, "login"],
+            // "/logout"               => [$this->app, "logout"],
+            //
+            // "/admin"                => [$this->app, "admin"],
+            //
+            // "/news/comments/enable" => [$this->app, "enableComments"],
+            // "/news/comments/disable" => [$this->app, "disableComments"],
+            //
+            // "/news/comment/delete"  => [$this->app, "deleteComment"],
+            // "/news/comment/edit"    => [$this->app, "editComment"],
+            //
+            // "/admin"                => [$this->app, "admin"],
         ];
     }
 

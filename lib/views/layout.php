@@ -32,7 +32,7 @@
                     }
                     echo "<p><a href='/logout'>Logout</a></p>";
                 } else {
-                    echo "<p><a href='/login'>Login</a></p>";
+                    echo "<p><a href=''>Login</a></p>";
                 }
                 ?>
             </div>

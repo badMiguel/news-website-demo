@@ -185,7 +185,7 @@ if (!isset($newsDetails["news_id"])) {
             <button type="submit">Add Comment</button>
         </form>
     <?php else: ?>
-        <p>Please <a href="/login">login</a> to add a comment.</p>
+        <p>Please <a href="">login</a> to add a comment.</p>
     <?php endif; ?>
 <?php else: ?>
     <p>Comments are disabled for this article.</p>
