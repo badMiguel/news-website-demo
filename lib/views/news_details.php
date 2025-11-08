@@ -104,7 +104,7 @@ if (!isset($newsDetails["news_id"])) {
 <?php else: ?>
     <div class="comments">
         <?php
-        function displayComments($comments, $level = 0, $newsId, $commentsEnabled, $csrfToken, $csrfName)
+        function displayComments($comments, $newsId, $commentsEnabled, $csrfToken, $csrfName, $level = 0)
         {
             foreach ($comments as $comment):
         ?>
@@ -159,7 +159,7 @@ if (!isset($newsDetails["news_id"])) {
                     <?php endif; ?>
 
                     <?php if (!empty($comment['replies'])): ?>
-                        <?php displayComments($comment['replies'], $level + 1, $newsId, $commentsEnabled, $csrfToken, $csrfName); ?>
+                        <?php displayComments($comment['replies'], $newsId, $commentsEnabled, $csrfToken, $csrfName, $level + 1); ?>
                     <?php endif; ?>
 
                 </div>
@@ -167,7 +167,7 @@ if (!isset($newsDetails["news_id"])) {
             endforeach;
         }
 
-        displayComments($newsDetails['comments'], 0, $newsDetails['news_id'], $newsDetails['comments_enabled'], $csrfToken, $csrfName);
+        displayComments($newsDetails['comments'], $newsDetails['news_id'], $newsDetails['comments_enabled'], $csrfToken, $csrfName, 0);
         ?>
     </div>
 <?php endif; ?>
