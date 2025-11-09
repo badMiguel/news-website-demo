@@ -11,3 +11,4 @@ services:
       - .env
     ports:
       - "${PORT}:9000"
+    restart: unless-stopped
